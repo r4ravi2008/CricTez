@@ -301,13 +301,13 @@ class Token_meta_data:
     def get_type(self):
         t = sp.TRecord(
             token_id=token_id_type,
-            name=sp.TString,
-            player_id=sp.TString,
+            card_score=sp.TNat,
+            player_id=sp.TNat,
             extras=sp.TMap(sp.TString, sp.TString)
         )
         if self.config.force_layouts:
             t = t.layout(("token_id",
-                          ("name",
+                          ("card_score",
                            ("player_id", "extras"))))
         return t
 
@@ -513,7 +513,7 @@ class FA2(sp.Contract):
             operators=self.operator_set.make(),
             administrator=admin,
             all_tokens=self.token_id_set.empty(),
-            metadata_string=sp.unit,
+            metadata_string='https://rest.cricketapi.com/rest/v2/season/iplt20_2019/player/',
             players=self.config.my_map(
                 tkey=sp.TNat, tvalue=self.player_meta_data.get_type()),
             all_players=self.player_id_set.empty()
@@ -540,6 +540,8 @@ class FA2(sp.Contract):
             sp.verify(~ self.token_id_set.contains(self.data.all_tokens,
                                                    params.token_id),
                       "NFT-asset: cannot mint twice same token")
+        sp.verify(self.data.players.contains(
+            params.player_id), "Invalid Player ID")
         user = self.ledger_key.make(params.address, params.token_id)
         self.token_id_set.add(self.data.all_tokens, params.token_id)
         sp.if self.data.ledger.contains(user):
@@ -552,7 +554,7 @@ class FA2(sp.Contract):
             self.data.tokens[params.token_id] = sp.record(
                 token_id=params.token_id,
                 player_id=params.player_id,
-                name=params.metadata,  # Consered useless here
+                card_score=1,
                 extras=sp.map()
             )
 
@@ -686,12 +688,7 @@ class FA2(sp.Contract):
             sp.verify(~ self.player_id_set.contains(self.data.all_players,
                                                     params.player_id),
                       "NFT-asset: cannot mint twice same token")
-        user = self.ledger_key.make(params.address, params.player_id)
         self.player_id_set.add(self.data.all_players, params.player_id)
-        sp.if self.data.ledger.contains(user):
-            self.data.ledger[user].balance += params.amount
-        sp.else:
-            self.data.ledger[user] = Ledger_value.make(params.amount)
         sp.if self.data.players.contains(params.player_id):
             pass
         sp.else:
@@ -776,84 +773,59 @@ def add_test(config, is_default=True):
         # if config.non_fungible:
         #     # TODO
         #     return
-        scenario.h2("Initial Minting")
-        scenario.p("The administrator mints 100 token-0's to Alice.")
-        scenario += c1.mint(address=u1.address,
-                            amount=1,
-                            player_id='TK0',
-                            token_id=0,
-                            metadata='https://www.google.com/api'
-                            ).run(sender=admin)
-        scenario += c1.mint(address=u2.address,
-                            amount=1,
-                            player_id='TK1',
-                            token_id=1,
-                            metadata='https://www.google.com/api'
-                            ).run(sender=admin)
-        scenario += c1.mint(address=u3.address,
-                            amount=1,
-                            player_id='TK1',
-                            token_id=2,
-                            metadata='https://www.google.com/api'
-                            ).run(sender=admin)
-        scenario += c1.mint(address=u4.address,
-                            amount=1,
-                            player_id='TK1',
-                            token_id=3,
-                            metadata='https://www.google.com/api'
-                            ).run(sender=admin)
-        scenario += c1.mint(address=u5.address,
-                            amount=1,
-                            player_id='TK1',
-                            token_id=4,
-                            metadata='https://www.google.com/api'
-                            ).run(sender=admin)
-        scenario += c1.mint(address=u1.address,
-                            amount=1,
-                            player_id='TK1',
-                            token_id=5,
-                            metadata='https://www.google.com/api'
-                            ).run(sender=admin)
-        scenario += c1.mint(address=u2.address,
-                            amount=1,
-                            player_id='TK1',
-                            token_id=6,
-                            metadata='https://www.google.com/api'
-                            ).run(sender=admin)
-        scenario.h2("Transfer Token")
-        scenario.p("U1 Transfers Token-0 to U2")
-        scenario += c1.transfer(
-            [
-                c1.batch_transfer.item(from_=u1.address,
-                                       txs=[
-                                           sp.record(to_=u2.address,
-                                                     amount=1,
-                                                     token_id=0)
-                                       ])
-            ]).run(sender=u1)
-        scenario += c1.transfer(
-            [
-                c1.batch_transfer.item(from_=u1.address,
-                                       txs=[
-                                           sp.record(to_=u2.address,
-                                                     amount=1,
-                                                     token_id=0)
-                                       ])
-            ]).run(sender=u1, valid=False)
-        scenario.verify(
-            c1.data.ledger[c1.ledger_key.make(u1.address, 0)].balance == 0)
-        scenario.verify(
-            c1.data.ledger[c1.ledger_key.make(u2.address, 0)].balance == 1)
         scenario.h2("Add Player")
         scenario.p("The administrator adds Virat Kohli")
         scenario += c1.addPlayer(address=admin.address,
                                  amount=1,
-                                 player_id=1,
-                                 token_id=8,
+                                 player_id=0,
                                  name='Virat Kohli',
-                                 metadata='https://www.google.com/api'
+                                 metadata='/v_kohli/stats/'
                                  ).run(sender=admin)
-
+        scenario.p("The administrator adds MS Dhoni")
+        scenario += c1.addPlayer(address=admin.address,
+                                 amount=1,
+                                 player_id=1,
+                                 name='MS Dhoni',
+                                 metadata='/m_dhoni/stats/'
+                                 ).run(sender=admin)
+        scenario.p("The administrator adds Rohit Sharma")
+        scenario += c1.addPlayer(address=admin.address,
+                                 amount=1,
+                                 player_id=2,
+                                 name='Rohit Sharma',
+                                 metadata='/r_sharma/stats/'
+                                 ).run(sender=admin)
+        scenario.h2("Initial Minting")
+        scenario.p("The administrator mints Virat Kohli's token to User1.")
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=0
+                            ).run(sender=admin)
+        scenario.p("The administrator mints MS Dhoni's token to User1.")
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=1,
+                            token_id=1
+                            ).run(sender=admin)
+        scenario.p("The administrator mints Virat Kohli's token to User1.")
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=2,
+                            token_id=2
+                            ).run(sender=admin)
+        scenario.p("The administrator mints Virat Kohli's token to User2.")
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=3
+                            ).run(sender=admin)
+        scenario.p("The administrator mints Virat Kohli's token to User2.")
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=4
+                            ).run(sender=admin)
 
 ##
 # Global Environment Parameters
