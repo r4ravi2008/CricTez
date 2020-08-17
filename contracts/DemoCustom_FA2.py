@@ -159,8 +159,8 @@ class Batch_transfer:
             tx_type = tx_type.layout("to_")
             
         transfer_type = sp.TRecord(from_ = sp.TAddress,
-                                   txs = sp.TList(tx_type)).layout(
-                                       ("from_", "txs"))
+                                  txs = sp.TList(tx_type)).layout(
+                                      ("from_", "txs"))
         return transfer_type
     def get_type(self):
         return sp.TList(self.get_transfer_type())
@@ -208,9 +208,9 @@ class Ledger_key:
 ## extensions may require other fields.
 class Ledger_value:
     def get_type():
-        return sp.TRecord(balance = sp.TNat, tokens = sp.TSet(t = sp.TNat))
-    def make(balance, token):
-        return sp.record(balance = balance, tokens = sp.set([token]))
+        return sp.TRecord(tokens = sp.TSet(t = sp.TNat))
+    def make(token):
+        return sp.record(tokens = sp.set([token]))
 
 ## The link between operators and the addresses they operate is kept
 ## in a *lazy set* of `(owner × operator)` values.
@@ -244,21 +244,21 @@ class Operator_set:
     def is_member(self, set, owner, operator):
         return set.contains(self.make_key(owner, operator))
 
-class Balance_of:
-    def request_type():
-        return sp.TRecord(
-            owner = sp.TAddress,
-            token_id = token_id_type).layout(("owner", "token_id"))
-    def response_type():
-        return sp.TList(
-            sp.TRecord(
-                request = Balance_of.request_type(),
-                balance = sp.TNat).layout(("request", "balance")))
-    def entry_point_type():
-        return sp.TRecord(
-            callback = sp.TContract(Balance_of.response_type()),
-            requests = sp.TList(Balance_of.request_type())
-        ).layout(("requests", "callback"))
+# class Balance_of:
+#     def request_type():
+#         return sp.TRecord(
+#             owner = sp.TAddress,
+#             token_id = token_id_type).layout(("owner", "token_id"))
+#     def response_type():
+#         return sp.TList(
+#             sp.TRecord(
+#                 request = Balance_of.request_type(),
+#                 balance = sp.TNat).layout(("request", "balance")))
+#     def entry_point_type():
+#         return sp.TRecord(
+#             callback = sp.TContract(Balance_of.response_type()),
+#             requests = sp.TList(Balance_of.request_type())
+#         ).layout(("requests", "callback"))
 
 class Token_meta_data:
     def __init__(self, config):
@@ -488,7 +488,7 @@ class FA2(sp.Contract):
         sp.if self.data.ledger.contains(user):
             self.data.ledger[user].tokens.add(params.token_id)
         sp.else:
-            self.data.ledger[user] = Ledger_value.make(params.amount, params.token_id)
+            self.data.ledger[user] = Ledger_value.make(params.token_id)
         sp.if self.data.tokens.contains(params.token_id):
             pass
         sp.else:
@@ -536,37 +536,37 @@ class FA2(sp.Contract):
                 sp.if self.data.ledger.contains(to_user):
                     self.data.ledger[to_user].tokens.add(tx.token_id)
                 sp.else:
-                     self.data.ledger[to_user] = Ledger_value.make(1, 1)
+                     self.data.ledger[to_user] = Ledger_value.make(1)
                      self.data.ledger[to_user].tokens.add(tx.token_id)
 
-    @sp.entry_point
-    def balance_of(self, params):
-        # paused may mean that balances are meaningless:
-        sp.verify( ~self.data.paused )
-        sp.set_type(params, Balance_of.entry_point_type())
-        def f_process_request(req):
-            user = self.ledger_key.make(req.owner, req.token_id)
-            sp.verify(self.data.tokens.contains(req.token_id),
-                      message = self.error_message.token_undefined())
-            sp.if self.data.ledger.contains(user):
-                balance = self.data.ledger[user].balance
-                sp.result(
-                    sp.record(
-                        request = sp.record(
-                            owner = sp.set_type_expr(req.owner, sp.TAddress),
-                            token_id = sp.set_type_expr(req.token_id, sp.TNat)),
-                        balance = balance))
-            sp.else:
-                sp.result(
-                    sp.record(
-                        request = sp.record(
-                            owner = sp.set_type_expr(req.owner, sp.TAddress),
-                            token_id = sp.set_type_expr(req.token_id, sp.TNat)),
-                        balance = 0))
-        res = sp.local("responses", params.requests.map(f_process_request))
-        destination = sp.set_type_expr(params.callback,
-                                       sp.TContract(Balance_of.response_type()))
-        sp.transfer(res.value, sp.mutez(0), destination)
+    # @sp.entry_point
+    # def balance_of(self, params):
+    #     # paused may mean that balances are meaningless:
+    #     sp.verify( ~self.data.paused )
+    #     sp.set_type(params, Balance_of.entry_point_type())
+    #     def f_process_request(req):
+    #         user = self.ledger_key.make(req.owner, req.token_id)
+    #         sp.verify(self.data.tokens.contains(req.token_id),
+    #                   message = self.error_message.token_undefined())
+    #         sp.if self.data.ledger.contains(user):
+    #             # balance = self.data.ledger[user].balance
+    #             sp.result(
+    #                 sp.record(
+    #                     request = sp.record(
+    #                         owner = sp.set_type_expr(req.owner, sp.TAddress),
+    #                         token_id = sp.set_type_expr(req.token_id, sp.TNat)),
+    #                     ))
+    #         sp.else:
+    #             sp.result(
+    #                 sp.record(
+    #                     request = sp.record(
+    #                         owner = sp.set_type_expr(req.owner, sp.TAddress),
+    #                         token_id = sp.set_type_expr(req.token_id, sp.TNat)),
+    #                     ))
+    #     res = sp.local("responses", params.requests.map(f_process_request))
+    #     destination = sp.set_type_expr(params.callback,
+    #                                   sp.TContract(Balance_of.response_type()))
+    #     sp.transfer(res.value, sp.mutez(0), destination)
 
     @sp.entry_point
     def token_metadata_registry(self, params):
@@ -958,7 +958,7 @@ def add_test(config, is_default = True):
         #                                           token_id = 0)])
         #     ]).run(sender = admin, valid = False)
         # scenario.h3("Consumer Contract for Callback Calls.")
-        consumer = View_consumer(c1)
+        # consumer = View_consumer(c1)
         # scenario += consumer
         # scenario.p("Consumer virtual address: "
         #           + sp.contract_address(consumer).export())
