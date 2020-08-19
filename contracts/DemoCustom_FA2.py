@@ -489,7 +489,9 @@ class FA2(sp.Contract):
             metadata_string='https://rest.cricketapi.com/rest/v2/season/iplt20_2019/player/',
             players=self.config.my_map(
                 tkey=sp.TNat, tvalue=self.player_meta_data.get_type()),
-            all_players=self.player_id_set.empty()
+            all_players=self.player_id_set.empty(),
+            tokens_on_sale=sp.big_map(tkey=sp.TNat, tvalue=sp.TRecord(
+                owner=sp.TAddress, price=sp.TMutez))
         )
 
     @sp.entry_point
@@ -640,6 +642,52 @@ class FA2(sp.Contract):
                 extras=sp.map()
             )
 
+    @sp.entry_point
+    def sellToken(self, params):
+        sp.verify(self.data.tokens.contains(
+            params.token_id), message="Invalid Token ID.")
+        sp.verify(self.data.ledger[sp.sender].tokens.contains(
+            params.token_id), message="Token Not Owned.")
+        sp.verify(~self.data.tokens_on_sale.contains(
+            params.token_id), message="Token is Already on Sale.")
+        sp.verify(params.price != sp.mutez(0),
+                  message="Please Enter a valid price.")
+        self.data.tokens_on_sale[params.token_id] = sp.record(
+            owner=sp.sender, price=params.price)
+
+    @sp.entry_point
+    def buyToken(self, params):
+        sp.verify(self.data.tokens.contains(
+            params.token_id), message="Invalid Token ID.")
+        sp.verify(self.data.tokens_on_sale.contains(
+            params.token_id), message="Token is not on Sale.")
+        tokenPrice = self.data.tokens_on_sale[params.token_id].price
+        tokenOwner = self.data.tokens_on_sale[params.token_id].owner
+        sp.verify(tokenOwner != sp.sender,
+                  message="Owner cannot buy already owned token.")
+        sp.verify(tokenPrice <= sp.amount,
+                  message="Pay proper amount for the token.")
+        sp.send(tokenOwner, tokenPrice)
+        self.data.ledger[tokenOwner].tokens.remove(params.token_id)
+        del self.data.tokens_on_sale[params.token_id]
+        sp.if self.data.ledger.contains(sp.sender):
+            self.data.ledger[sp.sender].tokens.add(params.token_id)
+        sp.else:
+            self.data.ledger[sp.sender] = Ledger_value.make(1)
+            self.data.ledger[sp.sender].tokens.add(params.token_id)
+
+    @sp.entry_point
+    def unlistToken(self, params):
+        sp.verify(self.data.tokens.contains(
+            params.token_id), message="Invalid Token ID.")
+        sp.verify(self.data.tokens_on_sale.contains(
+            params.token_id), message="Token is not on Sale.")
+        tokenOwner = self.data.tokens_on_sale[params.token_id].owner
+        sp.verify(sp.sender == tokenOwner,
+                  message="Only Token Owner can unlist the token from marketplace.")
+        del self.data.tokens_on_sale[params.token_id]
+
+
 # Tests
 ##
 # Auxiliary Consumer Contract
@@ -649,8 +697,6 @@ class FA2(sp.Contract):
 # It stores facts about the results in order to use `scenario.verify(...)`
 # (cf.
 # [documentation](https://www.smartpy.io/dev/reference.html#_in_a_test_scenario_)).
-
-
 class View_consumer(sp.Contract):
     def __init__(self, contract):
         self.contract = contract
@@ -802,6 +848,45 @@ def add_test(config, is_default=True):
                                                      token_id=2)
                                        ])
             ]).run(sender=u1)
+
+        scenario.h2("MaketPlace")
+        scenario.h4("Sell Tokens")
+        scenario.p("User 3 Puts Token-0 for sale.")
+        scenario += c1.sellToken(token_id=0, price=sp.mutez(1)).run(sender=u3)
+        scenario.p("User 2 Puts Token-3 for sale.")
+        scenario += c1.sellToken(token_id=3, price=sp.mutez(1)).run(sender=u2)
+        scenario.p(
+            "User 3 Puts Token-0 for sale, which is already on sale. Must Fail.")
+        scenario += c1.sellToken(token_id=0, price=sp.mutez(1)
+                                 ).run(sender=u3, valid=False)
+        scenario.p(
+            "User 2 Puts Token-1 for sale, which is not owned by User2. Must Fail.")
+        scenario += c1.sellToken(token_id=1, price=sp.mutez(1)
+                                 ).run(sender=u2, valid=False)
+        scenario.p(
+            "User 2 Puts Token-12 for sale, which does not exist. Must Fail.")
+        scenario += c1.sellToken(token_id=12,
+                                 price=sp.mutez(1)).run(sender=u2, valid=False)
+        scenario.p("User 2 Puts Token-3 for sale for 0xtz. Must Fail.")
+        scenario += c1.sellToken(token_id=3, price=sp.mutez(0)
+                                 ).run(sender=u2, valid=False)
+        scenario.p("User 3 Unlists Token-0 from marketplace.")
+        scenario += c1.unlistToken(token_id=0).run(sender=u3)
+        scenario.p(
+            "User 3 Puts Token-0 for sale, which is already on sale. Must Fail.")
+        scenario.h4("Buy Tokens")
+        scenario.p(
+            "User 1 Buys Token-0 form User3 wihout pariny proper amount. Must Fail.")
+        scenario += c1.buyToken(token_id=0).run(sender=u1,
+                                                amount=sp.mutez(0), valid=False)
+        scenario.p("User 1 Tries to buy Token-3 an unlisted Token. Must Fail.")
+        scenario += c1.buyToken(token_id=4).run(sender=u1,
+                                                amount=sp.mutez(1), valid=False)
+        scenario.p("User 3 Tries to buy already owned token. Must Fail.")
+        scenario += c1.buyToken(token_id=0).run(sender=u3,
+                                                amount=sp.mutez(1), valid=False)
+        scenario.p("User 1 Buys Token-3 form User2.")
+        scenario += c1.buyToken(token_id=3).run(sender=u1, amount=sp.mutez(1))
 
 
 ##
