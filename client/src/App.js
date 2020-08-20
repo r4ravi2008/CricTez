@@ -3,6 +3,9 @@ import "./App.css";
 import { useAuthContext } from "./context/auth/authContext";
 import Navbar from "../src/components/Navbar/Navbar";
 import Login from "./components/Login/Login";
+import Routes from "./components/Routes";
+import {BrowserRouter as Router} from "react-router-dom";
+
 
 function App() {
   const [state] = useAuthContext();
@@ -10,11 +13,13 @@ function App() {
   if (!state.isAuthenticated) {
     return <Login />;
   }
-  
 
   return (
     <div className="App">
-      <Navbar />
+      <Router>
+        <Navbar />
+        <Routes />
+      </Router>
     </div>
   );
 }

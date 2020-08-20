@@ -14,6 +14,8 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import CardMembershipOutlinedIcon from "@material-ui/icons/CardMembershipOutlined";
 import SportsCricketIcon from "@material-ui/icons/SportsCricket";
 import { Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
+
 
 const useStyles = makeStyles({
   list: {
@@ -58,26 +60,28 @@ export default function SwipeableTemporaryDrawer() {
         </center>
         <br />
         <Divider />
-        <ListItem button>
+
+        <ListItem button component={Link} to="/">
           <ListItemIcon>
             <MonetizationOnIcon />
           </ListItemIcon>
           <ListItemText primary={"Marketplace"} />
         </ListItem>
-        <ListItem button>
+
+        <ListItem button component={Link} to="/sell">
           <ListItemIcon>
             <ShoppingCartIcon />
           </ListItemIcon>
           <ListItemText primary={"Sell Cards"} />
         </ListItem>
-        <ListItem button>
+        <ListItem button component={Link} to="/owned">
           <ListItemIcon>
             <CardMembershipOutlinedIcon />
           </ListItemIcon>
           <ListItemText primary={"Owned Cards"} />
         </ListItem>
         <Divider />
-        <ListItem button>
+        <ListItem button component={Link} to="/play">
           <ListItemIcon>
             <SportsCricketIcon />
           </ListItemIcon>
