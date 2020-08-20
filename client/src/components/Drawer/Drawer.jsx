@@ -15,7 +15,7 @@ import CardMembershipOutlinedIcon from "@material-ui/icons/CardMembershipOutline
 import SportsCricketIcon from "@material-ui/icons/SportsCricket";
 import { Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
-
+import "./Drawer.css";
 
 const useStyles = makeStyles({
   list: {
@@ -23,6 +23,10 @@ const useStyles = makeStyles({
   },
   fullList: {
     width: "auto",
+  },
+  primaryText: {
+    fontSize: "0.9rem",
+    fontWeight: 500,
   },
 });
 
@@ -61,31 +65,48 @@ export default function SwipeableTemporaryDrawer() {
         <br />
         <Divider />
 
-        <ListItem button component={Link} to="/">
+        <ListItem
+          button
+          component={Link}
+          to="/"
+          className={clsx(classes.listItem)}
+        >
           <ListItemIcon>
-            <MonetizationOnIcon />
+            <MonetizationOnIcon fontSize={"small"} />
           </ListItemIcon>
-          <ListItemText primary={"Marketplace"} />
+          <ListItemText
+            primary={"Marketplace"}
+            classes={{ primary: classes.primaryText }}
+          />
         </ListItem>
 
         <ListItem button component={Link} to="/sell">
           <ListItemIcon>
-            <ShoppingCartIcon />
+            <ShoppingCartIcon fontSize={"small"} />
           </ListItemIcon>
-          <ListItemText primary={"Sell Cards"} />
+          <ListItemText
+            primary={"Sell Cards"}
+            classes={{ primary: classes.primaryText }}
+          />
         </ListItem>
         <ListItem button component={Link} to="/owned">
           <ListItemIcon>
-            <CardMembershipOutlinedIcon />
+            <CardMembershipOutlinedIcon fontSize={"small"} />
           </ListItemIcon>
-          <ListItemText primary={"Owned Cards"} />
+          <ListItemText
+            primary={"Owned Cards"}
+            classes={{ primary: classes.primaryText }}
+          />
         </ListItem>
         <Divider />
         <ListItem button component={Link} to="/play">
           <ListItemIcon>
-            <SportsCricketIcon />
+            <SportsCricketIcon fontSize={"small"} />
           </ListItemIcon>
-          <ListItemText primary={"Play & Earn"} />
+          <ListItemText
+            primary={"Play & Earn"}
+            classes={{ primary: classes.primaryText }}
+          />
         </ListItem>
       </List>
     </div>

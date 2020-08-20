@@ -10,9 +10,9 @@ import {BrowserRouter as Router} from "react-router-dom";
 function App() {
   const [state] = useAuthContext();
 
-  if (!state.isAuthenticated) {
-    return <Login />;
-  }
+  // if (!state.isAuthenticated) {
+  //   return <Login />;
+  // }
 
   return (
     <div className="App">

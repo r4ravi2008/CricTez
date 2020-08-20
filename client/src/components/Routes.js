@@ -16,7 +16,7 @@ class Routes extends React.Component {
         <Route path="/sell">
           <SellCards />
         </Route>
-        <Route path="/buy">
+        <Route path="/owned">
           <OwnedCards />
         </Route>
         <Route path="/play">
