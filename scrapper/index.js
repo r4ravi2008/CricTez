@@ -1,17 +1,15 @@
 const puppeteer = require("puppeteer");
+const axios = require("axios");
+var FormData = require("form-data");
+var fs = require("fs");
 
-(async () => {
+const scrapeData = async (url) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  await page.goto(
-    "https://www.iplt20.com/teams/chennai-super-kings/squad/9/ravindra-jadeja"
-  );
-  page.waitFor(5000);
-  await page.screenshot({ path: "1.png", fullPage: true });
-  await page.addScriptTag({
-    url: "https://code.jquery.com/jquery-3.2.1.min.js",
-  });
+  await page.goto(url);
+  await page.waitFor(5000);
+  await page.screenshot({ path: "./1.png" });
   const data = await page.evaluate(() => {
     let tableStringSplit = (s, type) => {
       s = s.replace(/ /g, "");
@@ -56,14 +54,14 @@ const puppeteer = require("puppeteer");
         for (var n = 0; n < iL.length; n++) {
           if (!type) {
             if (n % 14 === 0) {
-              rtn.push(obj);
+              if (Object.keys(obj).length !== 0) rtn.push(obj);
               obj = {};
             } else {
               obj[a[n % 14]] = iL[n].split("</td>")[0];
             }
           } else {
             if (n % 11 === 0) {
-              rtn.push(obj);
+              if (Object.keys(obj).length !== 0) rtn.push(obj);
               obj = {};
             } else {
               obj[a[n % 11]] = iL[n].split("</td>")[0];
@@ -77,14 +75,17 @@ const puppeteer = require("puppeteer");
     const name = document
       .getElementsByClassName("player-hero__name")[0]
       .innerText.replace(/(\r\n|\n|\r)/gm, " ");
-    const image = document.querySelector(".player-hero__photo").children[0].src;
+    const image_url = document.querySelector(".player-hero__photo").children[0]
+      .src;
     const player_id = document.querySelector(".player-hero__photo").children[0]
       .attributes["data-player-id"].value;
     const role = $(".player-details__value")[0].innerText;
-    const batStyle = document.querySelectorAll(".player-details__value")[1]
+    const batting_style = document.querySelectorAll(".player-details__value")[1]
       .innerText;
-    let bowlStyle = document.querySelectorAll(".player-details__value")[2]
+    if (batting_style == "") batting_style = "-";
+    let bowling_style = document.querySelectorAll(".player-details__value")[2]
       .innerText;
+    if (bowling_style == "") bowling_style = "-";
     const nationality = document.querySelectorAll(".player-details__value")[3]
       .innerText;
     const dob = document.querySelectorAll(".player-details__value")[5]
@@ -100,31 +101,54 @@ const puppeteer = require("puppeteer");
     const playerstatsTextBatting = document
       .getElementsByTagName("tbody")[2]
       .innerHTML.replace(/(\r\n|\n|\r)/gm, " ");
-    const playerBattingStats = tableStringSplit(playerstatsTextBatting, false);
+    const batting_stats = tableStringSplit(playerstatsTextBatting, false);
     const playerstatsTextBowl = document
       .getElementsByTagName("tbody")[3]
       .innerHTML.replace(/(\r\n|\n|\r)/gm, " ");
-    const playerBowlingStats = tableStringSplit(playerstatsTextBowl, true);
+    const bowling_stats = tableStringSplit(playerstatsTextBowl, true);
     const team = document.querySelector(".team-info").firstElementChild
       .innerText;
     return {
       name,
-      image,
+      image_url,
       player_id,
       role,
       matches,
       runs,
       wickets,
-      batStyle,
-      bowlStyle,
+      batting_style,
+      bowling_style,
       nationality,
       dob,
       bio,
-      playerBattingStats,
-      playerBowlingStats,
+      batting_stats,
+      bowling_stats,
       team,
     };
   });
   console.log(data);
   await browser.close();
-})();
+  return data;
+};
+let urls = [
+  "https://www.iplt20.com/teams/chennai-super-kings/squad/1/ms-dhoni",
+  "https://www.iplt20.com/teams/chennai-super-kings/squad/9/ravindra-jadeja",
+  "https://www.iplt20.com/teams/chennai-super-kings/squad/4944/km-asif",
+];
+
+const storeData = async (url) => {
+  const storageData = await scrapeData(url);
+  var formData = new FormData(storageData);
+
+  console.log(formData);
+  const data = axios
+    .post("http://localhost:3000/api/players/newplayer", { ...storageData })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  console.log(data);
+};
+urls.forEach((url) => storeData(url));
