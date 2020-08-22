@@ -3,7 +3,7 @@ const Joi = require("@hapi/joi");
 Joi.objectId = require("joi-objectid")(Joi);
 
 const playerSchema = new mongoose.Schema({
-  player_id: String,
+  player_id: { type: String, unique: true },
   name: String,
   team: String,
   role: String,
@@ -19,11 +19,12 @@ const playerSchema = new mongoose.Schema({
   wickets: String,
   nationality: String,
 });
+playerSchema.index({ name: 1, type: 1 });
 const Player = mongoose.model("Player", playerSchema);
 
 const validatePlayer = (data) => {
   const schema = Joi.object({
-    player_id: String,
+    player_id: Joi.string(),
     name: Joi.string(),
     team: Joi.string(),
     role: Joi.string(),

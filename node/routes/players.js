@@ -31,7 +31,6 @@ router.get("/playerdetails/:id", async (req, res) => {
 router.post("/newplayer/", async (req, res) => {
   const result = validatePlayer(req.body);
   if (result.error) {
-    console.log(result.error);
     res.status(400).send(result.error.details[0].message);
   } else {
     try {
@@ -39,7 +38,6 @@ router.post("/newplayer/", async (req, res) => {
       const temp = await player.save();
       res.status(200).send(temp);
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   }
