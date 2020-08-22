@@ -1,0 +1,46 @@
+.playerdetails__image > img {
+  width: 100%;
+}
+.playerdetails__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.playerdetails__name,
+.playerdetails__role {
+  margin: 1rem;
+}
+.playerdetails__name {
+  height: 70%;
+}
+.playerdetails__name {
+  height: 30%;
+}
+.playerdetails__name > h3 {
+  margin: 0;
+  margin-bottom: 0.1rem;
+  font-weight: 400;
+}
+.playerdetails__name > h1 {
+  font-size: 3rem;
+  font-weight: 700;
+}
+.playerdetails__role > h4 {
+  font-weight: 700;
+}
+.playerdetails__stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.playerdetails__heading {
+  font-weight: 500;
+}
+.playerdetails__value {
+  font-size: 3rem;
+  font-weight: 700;
+}
+.playerdetails__bio {
+    font-size: 1.1rem;
+    font-weight: 400;
+}

@@ -1,0 +1,14 @@
+.card__column > p,
+.card__column > h4 {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.card__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.card__buybutton {
+  padding: 0.7rem 3rem;
+  border-radius: 2rem;
+}

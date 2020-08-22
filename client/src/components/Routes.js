@@ -5,6 +5,8 @@ import SellCards from "./Pages/SellCards";
 import OwnedCards from "./Pages/OwnedCards";
 import Play from "./Pages/Play";
 import Profile from "./Pages/Profile";
+import PlayerDetails from "./Pages/PlayerDetails";
+import CardDetails from "./Pages/CardDetails";
 
 class Routes extends React.Component {
   render() {
@@ -24,6 +26,12 @@ class Routes extends React.Component {
         </Route>
         <Route path="/profile">
           <Profile />
+        </Route>
+        <Route path="/player/:id">
+          <PlayerDetails/>
+        </Route>
+        <Route path="/card/:id">
+          <CardDetails/>
         </Route>
         <Redirect to="/" />
       </Switch>

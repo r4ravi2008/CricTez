@@ -1,0 +1,28 @@
+.player__card {
+  width: 18rem;
+  display: inline-block;
+  margin: 1rem;
+  border: 0;
+  box-shadow: 0 5px 80px rgba(0, 0, 0, 0.08);
+  transition: 0.2s all ease-in-out;
+  cursor: pointer;
+}
+.player__card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 5px 80px rgba(0, 0, 0, 0.16);
+}
+.player__image {
+  background: linear-gradient(134deg, #000, #464646);
+}
+.player__info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.heading {
+  font-size: 1rem;
+  font-weight: 700;
+}
+.player__footer {
+  background-color: white;
+}
