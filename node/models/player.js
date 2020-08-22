@@ -44,5 +44,19 @@ const validatePlayer = (data) => {
   return schema.validate(data);
 };
 
-module.exports.Player = Player;
-module.exports.validatePlayer = validatePlayer;
+const shortPlayer = {
+  name: 1,
+  image_url: 1,
+  role: 1,
+  matches: 1,
+  runs: 1,
+  wickets: 1,
+  team: 1,
+  player_id: 1,
+};
+
+module.exports = {
+  Player: Player,
+  validatePlayer: validatePlayer,
+  shortPlayer: shortPlayer,
+};

@@ -1,18 +1,36 @@
 const express = require("express");
 const router = express.Router();
-const { Player, validatePlayer } = require("../models/player");
+const { Player, validatePlayer, shortPlayer } = require("../models/player");
 
 // GET ALL PLAYERS
 router.get("/", async (req, res) => {
   try {
-    const players = await Player.find();
+    const players = await Player.find()
+      .select(shortPlayer)
+      .sort({ player_id: 1 });
     res.status(200).send(players);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.message[0]);
   }
 });
 
-// GET PLAYER DETAILS WITH PLAYER ID
+// GET PLAYER WITH PLAYER ID
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const player = await Player.findOne({ player_id: id }).select(shortPlayer);
+
+    if (player === null) {
+      res.status(404).send("Invalid Player ID");
+    } else {
+      res.status(200).send(player);
+    }
+  } catch (error) {
+    res.status(400).send(error.message[0]);
+  }
+});
+
+// GET COMPLETE PLAYER DETAILS WITH PLAYER ID
 router.get("/playerdetails/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -23,7 +41,7 @@ router.get("/playerdetails/:id", async (req, res) => {
       res.status(200).send(player);
     }
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.message[0]);
   }
 });
 
@@ -38,7 +56,7 @@ router.post("/newplayer/", async (req, res) => {
       const temp = await player.save();
       res.status(200).send(temp);
     } catch (error) {
-      res.status(400).send(error);
+      res.status(400).send(error.message[0]);
     }
   }
 });
@@ -58,7 +76,7 @@ router.put("/update/:id", async (req, res) => {
     temp = await player.save();
     res.status(200).send(temp);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.message[0]);
   }
 });
 
@@ -72,7 +90,7 @@ router.delete("/delete/:id", async (req, res) => {
     let temp = await player.remove();
     res.status(200).send(temp);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.message[0]);
   }
 });
 
