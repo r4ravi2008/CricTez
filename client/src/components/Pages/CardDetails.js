@@ -1,12 +1,13 @@
-import React from 'react'
-import { useParams } from "react-router-dom";
-import CardDetail from "../CardDetails/CardDetail.jsx"
+import React from "react";
+import { useParams, useHistory } from "react-router-dom";
+import CardDetail from "../CardDetails/CardDetail.jsx";
 
-function CardDetails() {
-    let { id } = useParams();
-    return (
-        <CardDetail id={id} />
-    )
+function CardDetails(props) {
+  let { id } = useParams();
+  const history = useHistory();
+  const data = history.location.state;
+  // console.log(props)
+  return <CardDetail data={data} />;
 }
 
-export default CardDetails
+export default CardDetails;

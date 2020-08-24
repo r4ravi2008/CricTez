@@ -1,11 +1,8 @@
-import React from 'react'
+import React from "react";
+import OwnedCards from "./OwnedCards";
 
 function SellCards() {
-    return (
-        <div>
-            Sell Cards
-        </div>
-    )
+  return <OwnedCards />;
 }
 
-export default SellCards
+export default SellCards;

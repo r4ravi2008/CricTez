@@ -1,45 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { getContractStorage, getBigMap } from "../../api/tzStatsApi";
-import { contractAddress, tokensOnSaleBigmap } from "../../constants/contract";
 import PlayerCard from "../PlayerCard/PlayerCard";
-import { tokensForSale, playerData } from "../../utils/dummyData";
-import CardDeck from 'react-bootstrap/CardDeck'
-import Container from 'react-bootstrap/Container'
-import { Row } from "react-bootstrap";
+import Container from "react-bootstrap/Container";
+import { fetchTokensOnSale } from "../../api/playerMetadata";
 
-function BuyCards(props) {
-
-
-  const [contractStorage, setContractStorage] = useState({});
+function BuyCards() {
   const [tokens, setTokens] = useState([]);
 
-  const fetchContractStorage = async () => {
-    setContractStorage(await getContractStorage(contractAddress));
-  };
-
-  const fetchTokensOnSale = async () => {
-    setTokens(await getBigMap(tokensOnSaleBigmap));
-  };
-
-  // useEffect(() => {
-  //   fetchContractStorage();
-  //   fetchTokensOnSale();
-  //   setTokens(tokens);
-  // }, []);
-
   useEffect(() => {
-    setTokens(playerData)
-    console.log(playerData)
-  })
-
+    fetchTokensOnSale().then((res) => setTokens(res));
+  }, []);
 
   return (
-    <Container style={{ textAlign: 'center' }}>
-      {
+    <Container style={{ textAlign: "center" }}>
+      {!tokens.length ? (
+        <h3>No Tokens For Sale</h3>
+      ) : (
         tokens.map((token, index) => (
-          <PlayerCard key={index} data={token} />
+          <PlayerCard key={index} data={token} owned={false} />
         ))
-      }
+      )}
     </Container>
   );
 }

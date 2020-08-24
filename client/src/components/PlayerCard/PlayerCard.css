@@ -1,11 +1,19 @@
 .player__card {
-  width: 18rem;
   display: inline-block;
+  width: 18rem;
   margin: 1rem;
   border: 0;
   box-shadow: 0 5px 80px rgba(0, 0, 0, 0.08);
   transition: 0.2s all ease-in-out;
   cursor: pointer;
+}
+.loading {
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  width: 18rem;
+  margin: 1rem;
 }
 .player__card:hover {
   transform: translateY(-10px);
@@ -25,4 +33,12 @@
 }
 .player__footer {
   background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.player__footer > button {
+  padding: 5px 20px;
+  border-radius: 2rem;
+  color: white;
 }

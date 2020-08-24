@@ -11,6 +11,12 @@ router.get("/tokens/tokendetails/:id", async (req, res) => {
       `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.ALL_TOKENS_BIGMAP}/values`
     );
     const tokenData = tokenResponse.data[id].value;
+    const tokenOnSaleResponse = await axios.get(
+      `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.TOKENS_FOR_SALE_BIGMAP}/values`
+    );
+    let tokenOnSaleData = { sale: {} };
+    const onSale = tokenOnSaleResponse.data.filter((item) => item.key === id);
+    if (onSale.length) tokenOnSaleData.sale = onSale[0].value;
     const playerId = tokenResponse.data[id].value.player_id;
     const response = await axios.get(
       `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.ALL_PLAYERS_BIGMAP}/values`
@@ -20,7 +26,11 @@ router.get("/tokens/tokendetails/:id", async (req, res) => {
     if (player === null) {
       res.status(404).send("Invalid Player Metadata");
     } else {
-      res.status(200).send({ ...tokenData, ...player });
+      res.status(200).send({
+        ...tokenData,
+        ...player._doc,
+        ...tokenOnSaleData,
+      });
     }
   } catch (error) {
     res.status(400).send(error.message[0]);
@@ -110,4 +120,6 @@ router.get("/tokensforsale", async (req, res) => {
     res.status(400).send(error.message[0]);
   }
 });
+// GET ALL TOKENS FOR SALE ALONG WITH PLAYER DETAILS & FULL METADATA
+
 module.exports = router;

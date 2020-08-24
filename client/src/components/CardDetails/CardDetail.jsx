@@ -1,42 +1,67 @@
 import React, { useState, useEffect } from "react";
 import PlayerDetail from "../PlayerDetail/PlayerDetail";
-import { tokensForSale } from "../../utils/dummyData";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import "./CardDetail.css";
+import { useAuthContext } from "../../context/auth/authContext";
 
 function CardDetails(props) {
-  const id = props.id;
+  const [state, dipatch] = useAuthContext();
   const [card, setCard] = useState({});
+  const [tInitiated, setTInitiated] = useState(false);
+  const [tCompleted, setTCompleted] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setCard(tokensForSale[0]);
+    setCard(props.data);
+    console.log(state);
   }, []);
 
+  const buyToken = async () => {
+    setError(null);
+    setTInitiated(true);
+    console.log("Transaction Initiated");
+    console.log(card.sale.price);
+    try {
+      const operation = await state.contract.methods
+        .buyToken(card.token_id)
+        .send({ amount: parseInt(card?.sale?.price) / 1000000 });
+      await operation.confirmation();
+      console.log("Transaction Completed");
+      setTCompleted(true);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  console.log(card);
   return (
     <React.Fragment>
       <Container>
+        <div className="error">{error}</div>
         <br />
-        {card.value ? (
+        {card ? (
           <div>
             <Row className="card__info">
               <Col className="card__column" md={1}>
                 <p>Key</p>
-                <h4>{card.key}</h4>
+                <h4>{card.token_id}</h4>
               </Col>
               <Col className="card__column">
                 <p>Card Score</p>
-                <h4>2.74</h4>
+                <h4>{card.card_score}</h4>
               </Col>
               <Col className="card__column">
                 <p>Price</p>
-                <h4>{parseInt(card.value.price) / 1000000} xtz</h4>
+                <h4>{parseInt(card?.sale?.price) / 1000000} xtz</h4>
               </Col>
               <Col className="card__column">
                 <p>Owner</p>
-                <h4>{card.value.owner}</h4>
+                <h4>{card?.sale?.owner}</h4>
               </Col>
               <Col>
-                <Button className="card__buybutton">Buy</Button>
+                <Button className="card__buybutton" onClick={buyToken}>
+                  Buy
+                </Button>
               </Col>
             </Row>
             <br />
@@ -44,10 +69,11 @@ function CardDetails(props) {
             <br />
           </div>
         ) : (
-          <h1>Loading</h1>
+          " "
         )}
+        {tCompleted ? "Token Bought Successfully" : ""}
       </Container>
-      <PlayerDetail id={card.player_id} />
+      <PlayerDetail data={props.data} />
     </React.Fragment>
   );
 }

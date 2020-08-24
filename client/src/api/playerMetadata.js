@@ -1,4 +1,5 @@
 import axios from "axios";
+import { server } from "../constants/server";
 export const cricApi = "https://rest.cricketapi.com/rest/v2/player";
 const proxy = "https://cors-anywhere.herokuapp.com/";
 var cricapi = require("cricapi");
@@ -18,4 +19,44 @@ export const cricApifunction = async () => {
   cricapi.matches(function (databundle) {
     console.log(databundle);
   });
+};
+
+export const fetchTokenDetails = async (id) => {
+  console.log("Fetch Token Details");
+  try {
+    const res = await axios.get(`${server}/storage/tokens/tokendetails/${id}`);
+    return res.data;
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const fetchPlayerDetails = async (id) => {
+  console.log("Fetch Player Details");
+  try {
+    const res = await axios.get(`${server}/storage/playerdetails/${id}`);
+    return res.data;
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const fetchTokensOnSale = async () => {
+  console.log("Fetch Tokens On Sale");
+  try {
+    const res = await axios.get(`${server}/storage/tokensforsale`);
+    return res.data;
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const fetchOwnedTokens = async (address) => {
+  console.log("Fetch Owned Tokens");
+  try {
+    const res = await axios.get(`${server}/storage/owned/${address}`);
+    return res.data;
+  } catch (error) {
+    return { error };
+  }
 };
