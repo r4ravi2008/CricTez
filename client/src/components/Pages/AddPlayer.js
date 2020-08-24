@@ -6,6 +6,7 @@ import {
   getPlayersBigmapLength,
 } from "../../api/playerMetadata";
 import { useAuthContext } from "../../context/auth/authContext";
+import PlayerCardSm from "../PlayerCardSm/PlayerCardSm";
 
 function AddPlayer() {
   const [state, dispacth] = useAuthContext();
@@ -76,25 +77,7 @@ function AddPlayer() {
           </Button>
         </Form>
         <div className="addplayer__card">
-          {data ? (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <img src={data.image_url} />
-              <div className="info">
-                <h2>{data.name}</h2>
-                <h4>{data.role}</h4>
-                <h4 className="text-muted">{data.team}</h4>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
+          {data ? <PlayerCardSm data={data} /> : ""}
         </div>
       </div>
     </Container>

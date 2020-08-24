@@ -80,3 +80,13 @@ export const getPlayersBigmapLength = async () => {
     return { error };
   }
 };
+
+export const getTokensBigmapLength = async () => {
+  console.log("Get Tokens BigMap Length");
+  try {
+    const res = await axios.get(`${server}/storage/tokens/`);
+    return res.data.length;
+  } catch (error) {
+    return { error };
+  }
+};
