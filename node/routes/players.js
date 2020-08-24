@@ -94,4 +94,20 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
+// GET PLAYER WITH NAME
+router.post("/name/", async (req, res) => {
+  const name = req.body.name;
+  if (!name) return res.status(503).send("Provide Player Name");
+  try {
+    const player = await Player.findOne({ name: name });
+    if (player === null) {
+      res.status(200).send({});
+    } else {
+      res.status(200).send(player);
+    }
+  } catch (error) {
+    res.status(400).send(error.message[0]);
+  }
+});
+
 module.exports = router;

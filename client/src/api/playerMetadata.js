@@ -60,3 +60,23 @@ export const fetchOwnedTokens = async (address) => {
     return { error };
   }
 };
+
+export const fetchPlayerbyName = async (name) => {
+  console.log("Fetch Player By Name");
+  try {
+    const res = await axios.post(`${server}/players/name`, { name: name });
+    return res.data;
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const getPlayersBigmapLength = async () => {
+  console.log("Get Players BigMap Length");
+  try {
+    const res = await axios.get(`${server}/storage/players/`);
+    return res.data.length;
+  } catch (error) {
+    return { error };
+  }
+};

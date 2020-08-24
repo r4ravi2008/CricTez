@@ -14,3 +14,12 @@
   border: none;
   outline: none;
 }
+.addplayer__container {
+  display: flex;
+}
+.from__addplayer {
+  flex : 0.4
+}
+.addplayer__card  {
+  flex: 0.6;
+}

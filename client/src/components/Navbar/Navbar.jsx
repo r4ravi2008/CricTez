@@ -33,6 +33,12 @@ export default function MainNavbar(props) {
           <LinkContainer to="/play">
             <Nav.Link href="">Play</Nav.Link>
           </LinkContainer>
+          <LinkContainer to="/addplayer">
+            <Nav.Link href="">Add Player</Nav.Link>
+          </LinkContainer>
+          <LinkContainer to="/minttoken">
+            <Nav.Link href="">Mint Token</Nav.Link>
+          </LinkContainer>
         </Nav>
         <Nav>
           <Nav.Link>{state.userAddress}</Nav.Link>
