@@ -18,6 +18,7 @@ function MintToken() {
   const [data, setData] = useState();
   const [error, setError] = useState(null);
 
+  
   const mintToken = async (e) => {
     e.preventDefault();
     setError(null);

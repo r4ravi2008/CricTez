@@ -26,7 +26,6 @@ function SellCardDetails(props) {
       await operation.confirmation();
       console.log("Transaction Completed");
       setTCompleted(true);
-      history.push("/sell");
     } catch (error) {
       setError(error.message);
     }

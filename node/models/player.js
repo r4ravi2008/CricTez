@@ -5,6 +5,8 @@ Joi.objectId = require("joi-objectid")(Joi);
 const playerSchema = new mongoose.Schema({
   player_id: { type: String, unique: true },
   name: { type: String, unique: true },
+  points: Number,
+  rank: Number,
   team: String,
   role: String,
   batting_style: String,
@@ -25,6 +27,8 @@ const validatePlayer = (data) => {
   const schema = Joi.object({
     player_id: Joi.string(),
     name: Joi.string(),
+    points: Joi.number(),
+    rank: Joi.number(),
     team: Joi.string(),
     role: Joi.string(),
     batting_style: Joi.string(),

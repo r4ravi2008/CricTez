@@ -14,6 +14,19 @@ router.get("/", async (req, res) => {
   }
 });
 
+// UPDATE ALL PLAYERS WITH POINTS ZERO
+router.get("/updatepoints/all", async (req, res) => {
+  try {
+    const player = await Player.updateMany(
+      {},
+      { $set: { points: 0, rank: 10000 } }
+    );
+    res.send(player);
+  } catch (err) {
+    res.status(error.status).send(error);
+  }
+});
+
 // GET PLAYER WITH PLAYER ID
 router.get("/:id", async (req, res) => {
   const id = req.params.id;

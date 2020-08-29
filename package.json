@@ -1,0 +1,20 @@
+{
+  "name": "Cricetez",
+  "version": "1.0.0",
+  "description": "Fantasy Crypto Cricket League",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shubham-kukreja/Cricketez.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shubham-kukreja/Cricketez/issues"
+  },
+  "homepage": "https://github.com/shubham-kukreja/Cricketez#readme"
+}

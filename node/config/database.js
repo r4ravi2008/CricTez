@@ -18,3 +18,4 @@ const db = mongoose
   })
   .then(() => console.log("Connected to mongo atlas database"))
   .catch((e) => console.error("Could not connect to mongodb", e));
+

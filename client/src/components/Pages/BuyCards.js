@@ -13,7 +13,7 @@ function BuyCards() {
   return (
     <Container style={{ textAlign: "center" }}>
       {!tokens.length ? (
-        <h3>No Tokens For Sale</h3>
+        <h3>Loading...</h3>
       ) : (
         tokens.map((token, index) => (
           <PlayerCard key={index} data={token} owned={false} />

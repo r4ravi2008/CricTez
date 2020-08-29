@@ -15,7 +15,7 @@ function OwnedCards() {
   return (
     <Container style={{ textAlign: "center" }}>
       {!tokens.length ? (
-        <h3>No Tokens</h3>
+        <h3>Loading...</h3>
       ) : (
         tokens.map((token, index) => (
           <PlayerCard key={index} data={{ key: token }} owned={true} />
