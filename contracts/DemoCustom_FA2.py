@@ -697,22 +697,6 @@ class FA2(sp.Contract):
         del self.data.tokens_on_sale[params.token_id]
 
     @sp.entry_point
-    def selectTeam(self, params):
-        sp.verify(self.data.matches[params.match_id].active == True,
-                  message="Match either does not exists or is inacitve.")
-        sp.verify(sp.len(params.tokens) == 5,
-                  message="Only Five Tokens are Allowed.")
-        self.data.selected_tokens[sp.sender] = sp.record(tokens=sp.set())
-        sp.for token_id in params.tokens:
-            token_id = sp.set_type_expr(token_id, sp.TNat)
-            sp.verify(self.data.ledger[sp.sender].tokens.contains(
-                token_id), message="You can only select owned tokens.")
-            sp.verify(~self.data.tokens_on_sale.contains(
-                token_id), message="Cannot Play with a token on Sale. Unlist the token to continue.")
-            self.data.tokens[token_id].inMatch = True
-            self.data.selected_tokens[sp.sender].tokens.add(token_id)
-
-    @sp.entry_point
     def startMatch(self, params):
         sp.verify(sp.sender == self.data.administrator,
                   message="Only Admin Can Start/End a Match.")
@@ -735,6 +719,24 @@ class FA2(sp.Contract):
                 card.inMatch = False
                 card.card_score += points
             del self.data.selected_tokens[item.key]
+
+    @sp.entry_point
+    def selectTeam(self, params):
+        sp.verify(self.data.matches[params.match_id].active == True,
+                  message="Match either does not exists or is inacitve.")
+        sp.verify(sp.len(params.tokens) == 5,
+                  message="Only Five Tokens are Allowed.")
+        sp.verify(~self.data.selected_tokens.contains(sp.sender),
+                  message="You have already staked Cards for the match.")
+        self.data.selected_tokens[sp.sender] = sp.record(tokens=sp.set())
+        sp.for token_id in params.tokens:
+            token_id = sp.set_type_expr(token_id, sp.TNat)
+            sp.verify(self.data.ledger[sp.sender].tokens.contains(
+                token_id), message="You can only select owned tokens.")
+            sp.verify(~self.data.tokens_on_sale.contains(
+                token_id), message="Cannot Play with a token on Sale. Unlist the token to continue.")
+            self.data.tokens[token_id].inMatch = True
+            self.data.selected_tokens[sp.sender].tokens.add(token_id)
 
 
 # Tests
@@ -1010,6 +1012,31 @@ def add_test(config, is_default=True):
                             player_id=0,
                             token_id=14
                             ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=1,
+                            token_id=15
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=16
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=2,
+                            token_id=17
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=18
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=1,
+                            token_id=19
+                            ).run(sender=admin)
 
         scenario.h2("Fantasy League")
         scenario.h4("Add Match")
@@ -1037,6 +1064,13 @@ def add_test(config, is_default=True):
         scenario.p("User 2 puts 5 owned tokens for Match")
         scenario += c1.selectTeam(tokens=[10, 11,
                                           12, 13, 14], match_id=0).run(sender=u2)
+        scenario.p("User 2 puts another 5 owned tokens for Match. Must Fail.")
+        scenario += c1.selectTeam(tokens=[15, 16, 17, 18, 19],
+                                  match_id=0).run(sender=u2, valid=False)
+        scenario.p(
+            "User 2 puts 5 owned tokens (already staked) for Match. Must Fail")
+        scenario += c1.selectTeam(tokens=[10, 11, 12, 13, 14],
+                                  match_id=0).run(sender=u2, valid=False)
         scenario.p("User 3 puts not owned token for Match. Must Fail.")
         scenario += c1.selectTeam(tokens=[0, 1, 2, 3, 6],
                                   match_id=0).run(sender=u3, valid=False)
