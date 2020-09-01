@@ -734,6 +734,7 @@ class FA2(sp.Contract):
                 points = card.player_id
                 card.inMatch = False
                 card.card_score += points
+                
             del self.data.selected_tokens[item.key]
 
 
