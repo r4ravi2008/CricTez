@@ -4,6 +4,7 @@ import { fetchTokenDetails } from "../../api/playerMetadata";
 import { Card, Spinner, Button } from "react-bootstrap";
 import "./PlayerCard.css";
 import { useHistory } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
 
 export default function PlayerCard(props) {
   const { data } = props;

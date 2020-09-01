@@ -11,7 +11,7 @@ class FA2_config:
                  readable=True,
                  force_layouts=True,
                  support_operator=True,
-                 assume_consecutive_token_ids=True,
+                 assume_consecutive_token_ids=False,
                  add_permissions_descriptor=False,
                  lazy_entry_points=False,
                  lazy_entry_points_multiple=False
@@ -481,6 +481,7 @@ class FA2(sp.Contract):
         self.exception_optimization_level = "DefaultLine"
         self.init(
             paused=False,
+            test_field=sp.set(),
             ledger=self.config.my_map(tvalue=Ledger_value.get_type()),
             tokens=self.config.my_map(tvalue=self.token_meta_data.get_type()),
             operators=self.operator_set.make(),
@@ -491,7 +492,9 @@ class FA2(sp.Contract):
                 tkey=sp.TNat, tvalue=self.player_meta_data.get_type()),
             all_players=self.player_id_set.empty(),
             tokens_on_sale=sp.big_map(tkey=sp.TNat, tvalue=sp.TRecord(
-                owner=sp.TAddress, price=sp.TMutez))
+                owner=sp.TAddress, price=sp.TMutez)),
+            selected_tokens=sp.map(
+                tkey=sp.TAddress, tvalue=sp.TRecord(tokens=sp.TSet(sp.TNat))),
         )
 
     @sp.entry_point
@@ -686,6 +689,31 @@ class FA2(sp.Contract):
         sp.verify(sp.sender == tokenOwner,
                   message="Only Token Owner can unlist the token from marketplace.")
         del self.data.tokens_on_sale[params.token_id]
+
+    @sp.entry_point
+    def selectTeam(self, params):
+        sp.verify(sp.len(params.tokens) == 5,
+                  message="Only Five Tokens are Allowed.")
+        self.data.selected_tokens[sp.sender] = sp.record(tokens=sp.set())
+        sp.for token_id in params.tokens:
+            token_id = sp.set_type_expr(token_id, sp.TNat)
+            sp.verify(self.data.ledger[sp.sender].tokens.contains(
+                token_id), message="You can only select owned tokens.")
+            self.data.selected_tokens[sp.sender].tokens.add(token_id)
+
+    @sp.entry_point
+    def endMatch(self):
+        # Call Oro Contratct which will return player-id -> points
+        test = {0: 284, 1: 294, 2: 300}
+        sp.verify(sp.sender == self.data.administrator,
+                  message="Only Admin Can End a Match.")
+        sp.for item in self.data.selected_tokens.items():
+            sp.for token_id in item.value.tokens.elements():
+                card = self.data.tokens[token_id]
+                # player_id = sp.nat(card.player_id)
+                # points = test[player_id]
+                points = card.player_id
+                card.card_score += points
 
 
 # Tests
@@ -887,7 +915,80 @@ def add_test(config, is_default=True):
                                                 amount=sp.mutez(1), valid=False)
         scenario.p("User 1 Buys Token-3 form User2.")
         scenario += c1.buyToken(token_id=3).run(sender=u1, amount=sp.mutez(1))
+        scenario += c1.transfer(
+            [
+                c1.batch_transfer.item(from_=u2.address,
+                                       txs=[
+                                           sp.record(to_=u3.address,
+                                                     token_id=4)
+                                       ])
+            ]).run(sender=u2)
+        scenario += c1.transfer(
+            [
+                c1.batch_transfer.item(from_=u1.address,
+                                       txs=[
+                                           sp.record(to_=u3.address,
+                                                     token_id=3)
+                                       ])
+            ]).run(sender=u1)
+        # Mint Five Tokens to U1 & U2 for Testing Select Teams
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=5
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=6
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=1,
+                            token_id=7
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=2,
+                            token_id=8
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=9
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=10
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=11
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=2,
+                            token_id=12
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=13
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=14
+                            ).run(sender=admin)
+        scenario.h2("Select Team Tokens.")
+        scenario += c1.selectTeam(tokens=[0, 1, 2, 3, 4]).run(sender=u3)
+        scenario += c1.selectTeam(tokens=[10, 11, 12, 13, 14]).run(sender=u2)
+        scenario += c1.selectTeam(tokens=[5, 6, 7, 8, 9]).run(sender=u1)
 
+        scenario.h2("End Match / Update Card Scores")
+        scenario += c1.endMatch().run(sender=admin)
 
 ##
 # Global Environment Parameters
@@ -896,6 +997,8 @@ def add_test(config, is_default=True):
 # environment variables.
 # The function `environment_config` creates an `FA2_config` given the
 # presence and values of a few environment variables.
+
+
 def global_parameter(env_var, default):
     try:
         if os.environ[env_var] == "true":

@@ -32,7 +32,7 @@ function PlayerDetail(props) {
             <div>Player Score</div>
           </div>
           <div className="player__info playerdetails__value">
-            <div>274</div>
+            <div>{data.points}</div>
           </div>
         </Col>
         <Col md={4} className="playerdetails__stats">
