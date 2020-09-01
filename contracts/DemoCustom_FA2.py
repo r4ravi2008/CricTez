@@ -734,7 +734,6 @@ class FA2(sp.Contract):
                 points = card.player_id
                 card.inMatch = False
                 card.card_score += points
-                
             del self.data.selected_tokens[item.key]
 
 
@@ -1006,16 +1005,36 @@ def add_test(config, is_default=True):
                             ).run(sender=admin)
 
         scenario.h2("Add Match")
+        scenario.p("Add Match without Admin Account. Must Fail.")
+        scenario += c1.startMatch(teamA="CSK", teamB="RCB",
+                                  match_id=0).run(sender=u1, valid=False)
+        scenario.p("Add Match using Admin Account.")
         scenario += c1.startMatch(teamA="CSK", teamB="RCB",
                                   match_id=0).run(sender=admin)
+        scenario.p("Add already existing Match. Must Fail.")
+        scenario += c1.startMatch(teamA="CSK", teamB="RCB",
+                                  match_id=0).run(sender=admin, valid=False)
 
         scenario.h2("Select Team Tokens.")
-        scenario += c1.selectTeam(tokens=[0, 1,
-                                          2, 3, 4], match_id=0).run(sender=u3)
-        scenario += c1.selectTeam(tokens=[10, 11,
-                                          12, 13, 14], match_id=0).run(sender=u2)
+        scenario.p("User 1 puts 5 owned tokens in Match.")
         scenario += c1.selectTeam(tokens=[5, 6,
                                           7, 8, 9], match_id=0).run(sender=u1)
+        scenario.p("User 2 puts 4 tokens for Match. Must Fail.")
+        scenario += c1.selectTeam(tokens=[10, 11, 12, 13],
+                                  match_id=0).run(sender=u2, valid=False)
+        scenario.p(
+            "User 2 puts 5 tokens for a InValid Match ( that does not exixst in the matches Map).Must Fail. ")
+        scenario += c1.selectTeam(tokens=[10, 11, 12, 13, 14],
+                                  match_id=1).run(sender=u2, valid=False)
+        scenario.p("User 2 puts 5 owned tokens for Match")
+        scenario += c1.selectTeam(tokens=[10, 11,
+                                          12, 13, 14], match_id=0).run(sender=u2)
+        scenario.p("User 3 puts not owned token for Match. Must Fail.")
+        scenario += c1.selectTeam(tokens=[0, 1, 2, 3, 6],
+                                  match_id=0).run(sender=u3, valid=False)
+        scenario.p("User 3 puts owned token for Match.")
+        scenario += c1.selectTeam(tokens=[0, 1,
+                                          2, 3, 4], match_id=0).run(sender=u3)
 
         scenario.h2("End Match / Update Card Scores")
         scenario += c1.endMatch().run(sender=admin)
