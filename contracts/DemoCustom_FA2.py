@@ -732,7 +732,9 @@ class FA2(sp.Contract):
                 # player_id = sp.nat(card.player_id)
                 # points = test[player_id]
                 points = card.player_id
+                card.inMatch = False
                 card.card_score += points
+            del self.data.selected_tokens[item.key]
 
 
 # Tests
