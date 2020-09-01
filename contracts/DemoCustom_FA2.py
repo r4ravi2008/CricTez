@@ -481,7 +481,6 @@ class FA2(sp.Contract):
         self.exception_optimization_level = "DefaultLine"
         self.init(
             paused=False,
-            test_field=sp.set(),
             ledger=self.config.my_map(tvalue=Ledger_value.get_type()),
             tokens=self.config.my_map(tvalue=self.token_meta_data.get_type()),
             operators=self.operator_set.make(),
@@ -495,6 +494,8 @@ class FA2(sp.Contract):
                 owner=sp.TAddress, price=sp.TMutez)),
             selected_tokens=sp.map(
                 tkey=sp.TAddress, tvalue=sp.TRecord(tokens=sp.TSet(sp.TNat))),
+            matches=sp.map(tkey=sp.TNat, tvalue=sp.TRecord(
+                teamA=sp.TString, teamB=sp.TString, active=sp.TBool))
         )
 
     @sp.entry_point
@@ -692,6 +693,8 @@ class FA2(sp.Contract):
 
     @sp.entry_point
     def selectTeam(self, params):
+        sp.verify(self.data.matches[params.match_id].active == True,
+                  message="Match either does not exists or is inacitve.")
         sp.verify(sp.len(params.tokens) == 5,
                   message="Only Five Tokens are Allowed.")
         self.data.selected_tokens[sp.sender] = sp.record(tokens=sp.set())
@@ -702,11 +705,19 @@ class FA2(sp.Contract):
             self.data.selected_tokens[sp.sender].tokens.add(token_id)
 
     @sp.entry_point
+    def startMatch(self, params):
+        sp.verify(sp.sender == self.data.administrator,
+                  message="Only Admin Can Start/End a Match.")
+        sp.verify(~self.data.matches.contains(params.match_id),
+                  message="Match Already Exists.")
+        self.data.matches[params.match_id] = sp.record(
+            teamA=params.teamA, teamB=params.teamB, active=True)
+
+    @sp.entry_point
     def endMatch(self):
         # Call Oro Contratct which will return player-id -> points
-        test = {0: 284, 1: 294, 2: 300}
         sp.verify(sp.sender == self.data.administrator,
-                  message="Only Admin Can End a Match.")
+                  message="Only Admin Can Start/End a Match.")
         sp.for item in self.data.selected_tokens.items():
             sp.for token_id in item.value.tokens.elements():
                 card = self.data.tokens[token_id]
@@ -982,10 +993,18 @@ def add_test(config, is_default=True):
                             player_id=0,
                             token_id=14
                             ).run(sender=admin)
+
+        scenario.h2("Add Match")
+        scenario += c1.startMatch(teamA="CSK", teamB="RCB",
+                                  match_id=0).run(sender=admin)
+
         scenario.h2("Select Team Tokens.")
-        scenario += c1.selectTeam(tokens=[0, 1, 2, 3, 4]).run(sender=u3)
-        scenario += c1.selectTeam(tokens=[10, 11, 12, 13, 14]).run(sender=u2)
-        scenario += c1.selectTeam(tokens=[5, 6, 7, 8, 9]).run(sender=u1)
+        scenario += c1.selectTeam(tokens=[0, 1,
+                                          2, 3, 4], match_id=0).run(sender=u3)
+        scenario += c1.selectTeam(tokens=[10, 11,
+                                          12, 13, 14], match_id=0).run(sender=u2)
+        scenario += c1.selectTeam(tokens=[5, 6,
+                                          7, 8, 9], match_id=1).run(sender=u1)
 
         scenario.h2("End Match / Update Card Scores")
         scenario += c1.endMatch().run(sender=admin)
