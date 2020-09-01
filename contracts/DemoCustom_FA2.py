@@ -784,7 +784,7 @@ def add_test(config, is_default=True):
     @sp.add_test(name=config.name, is_default=is_default)
     def test():
         scenario = sp.test_scenario()
-        scenario.h1("FA2 Contract Name: " + config.name)
+        scenario.h1("CricTez - FA2-NFT, MarketPlace & FantasyLeague")
         scenario.table_of_contents()
         # sp.test_account generates ED25519 key-pairs deterministically:
 
@@ -803,7 +803,8 @@ def add_test(config, is_default=True):
         c1 = FA2(config, admin.address)
         scenario += c1
 
-        scenario.h2("Add Player")
+        scenario.h2("Player Tokens")
+        scenario.h4("Add Player")
         scenario.p("The administrator adds Virat Kohli")
         scenario += c1.addPlayer(address=admin.address,
                                  amount=1,
@@ -826,7 +827,7 @@ def add_test(config, is_default=True):
                                  metadata='/r_sharma/stats/'
                                  ).run(sender=admin)
 
-        scenario.h2("Initial Minting")
+        scenario.h4("Mint Tokens")
         scenario.p("The administrator mints Virat Kohli's token to User1.")
         scenario += c1.mint(address=u1.address,
                             amount=1,
@@ -858,7 +859,7 @@ def add_test(config, is_default=True):
                             token_id=4
                             ).run(sender=admin)
 
-        scenario.h2("Transfer Token")
+        scenario.h4("Transfer Tokens")
         scenario.p("User1 Transfers Token 1 to User2.")
         scenario += c1.transfer(
             [
@@ -919,8 +920,14 @@ def add_test(config, is_default=True):
         scenario.p("User 2 Puts Token-3 for sale for 0xtz. Must Fail.")
         scenario += c1.sellToken(token_id=3, price=sp.mutez(0)
                                  ).run(sender=u2, valid=False)
+
+        scenario.h4("Unlist Tokens")
+        scenario.p(
+            "User 2 Unlists Token-0 (not owned) from marketplace. Must Fail.")
+        scenario += c1.unlistToken(token_id=0).run(sender=u2, valid=False)
         scenario.p("User 3 Unlists Token-0 from marketplace.")
         scenario += c1.unlistToken(token_id=0).run(sender=u3)
+
         scenario.p(
             "User 3 Puts Token-0 for sale, which is already on sale. Must Fail.")
         scenario.h4("Buy Tokens")
@@ -1004,7 +1011,8 @@ def add_test(config, is_default=True):
                             token_id=14
                             ).run(sender=admin)
 
-        scenario.h2("Add Match")
+        scenario.h2("Fantasy League")
+        scenario.h4("Add Match")
         scenario.p("Add Match without Admin Account. Must Fail.")
         scenario += c1.startMatch(teamA="CSK", teamB="RCB",
                                   match_id=0).run(sender=u1, valid=False)
@@ -1015,7 +1023,7 @@ def add_test(config, is_default=True):
         scenario += c1.startMatch(teamA="CSK", teamB="RCB",
                                   match_id=0).run(sender=admin, valid=False)
 
-        scenario.h2("Select Team Tokens.")
+        scenario.h4("Select Team Tokens.")
         scenario.p("User 1 puts 5 owned tokens in Match.")
         scenario += c1.selectTeam(tokens=[5, 6,
                                           7, 8, 9], match_id=0).run(sender=u1)
@@ -1036,7 +1044,7 @@ def add_test(config, is_default=True):
         scenario += c1.selectTeam(tokens=[0, 1,
                                           2, 3, 4], match_id=0).run(sender=u3)
 
-        scenario.h2("End Match / Update Card Scores")
+        scenario.h4("End Match / Update Card Scores")
         scenario += c1.endMatch().run(sender=admin)
 
 ##
