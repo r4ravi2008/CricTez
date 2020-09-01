@@ -275,13 +275,15 @@ class Token_meta_data:
         t = sp.TRecord(
             token_id=token_id_type,
             card_score=sp.TNat,
+            inMatch=sp.TBool,
             player_id=sp.TNat,
             extras=sp.TMap(sp.TString, sp.TString)
         )
         if self.config.force_layouts:
             t = t.layout(("token_id",
                           ("card_score",
-                           ("player_id", "extras"))))
+                           ("inMatch",
+                            ("player_id", "extras")))))
         return t
 
     def set_type_and_layout(self, expr):
@@ -534,7 +536,8 @@ class FA2(sp.Contract):
                 token_id=params.token_id,
                 player_id=params.player_id,
                 card_score=1,
-                extras=sp.map()
+                extras=sp.map(),
+                inMatch=False
             )
 
     @sp.entry_point
@@ -652,6 +655,8 @@ class FA2(sp.Contract):
             params.token_id), message="Invalid Token ID.")
         sp.verify(self.data.ledger[sp.sender].tokens.contains(
             params.token_id), message="Token Not Owned.")
+        sp.verify(self.data.tokens[params.token_id].inMatch == False,
+                  message="Cannot Sell a Active Token. Please wait until match finishes.")
         sp.verify(~self.data.tokens_on_sale.contains(
             params.token_id), message="Token is Already on Sale.")
         sp.verify(params.price != sp.mutez(0),
@@ -702,6 +707,9 @@ class FA2(sp.Contract):
             token_id = sp.set_type_expr(token_id, sp.TNat)
             sp.verify(self.data.ledger[sp.sender].tokens.contains(
                 token_id), message="You can only select owned tokens.")
+            sp.verify(~self.data.tokens_on_sale.contains(
+                token_id), message="Cannot Play with a token on Sale. Unlist the token to continue.")
+            self.data.tokens[token_id].inMatch = True
             self.data.selected_tokens[sp.sender].tokens.add(token_id)
 
     @sp.entry_point
@@ -1004,7 +1012,7 @@ def add_test(config, is_default=True):
         scenario += c1.selectTeam(tokens=[10, 11,
                                           12, 13, 14], match_id=0).run(sender=u2)
         scenario += c1.selectTeam(tokens=[5, 6,
-                                          7, 8, 9], match_id=1).run(sender=u1)
+                                          7, 8, 9], match_id=0).run(sender=u1)
 
         scenario.h2("End Match / Update Card Scores")
         scenario += c1.endMatch().run(sender=admin)
