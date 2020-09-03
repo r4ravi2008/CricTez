@@ -738,7 +738,7 @@ class FA2(sp.Contract):
                 card.inMatch = False
                 card.card_score += points
             del self.data.selected_tokens[item.key]
-        self.data.matches[params.match_id].active == False
+        self.data.matches[params.match_id].active = False
         self.data.matches[params.match_id].finished = True
 
     @sp.entry_point
