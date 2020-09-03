@@ -488,7 +488,7 @@ class FA2(sp.Contract):
             operators=self.operator_set.make(),
             administrator=admin,
             all_tokens=self.token_id_set.empty(),
-            metadata_string='https://rest.cricketapi.com/rest/v2/season/iplt20_2019/player/',
+            metadata_string='',
             players=self.config.my_map(
                 tkey=sp.TNat, tvalue=self.player_meta_data.get_type()),
             all_players=self.player_id_set.empty(),
@@ -1074,9 +1074,13 @@ def add_test(config, is_default=True):
         scenario += c1.addMatch(teamA="CSK", teamB="RCB",
                                 match_id=0).run(sender=admin, valid=False)
 
-        scenario.p("Activate Match.")
+        scenario.h4("Activate Match.")
+        scenario.p("Activate a Match using Admin Account")
         scenario += c1.activateMatch(match_id=0).run(sender=admin)
+        scenario.p("Activate a another match while a match is active. Must Fail.")
         scenario += c1.activateMatch(match_id=1).run(sender=admin, valid=False)
+        scenario.p("Activate a another match that does not exist. Must Fail.")
+        scenario += c1.activateMatch(match_id=2).run(sender=admin, valid=False)
 
         scenario.h4("Select Team Tokens.")
         scenario.p("User 1 puts 5 owned tokens in Match.")
