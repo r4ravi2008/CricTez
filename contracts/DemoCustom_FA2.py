@@ -497,7 +497,7 @@ class FA2(sp.Contract):
             selected_tokens=sp.map(
                 tkey=sp.TAddress, tvalue=sp.TRecord(tokens=sp.TSet(sp.TNat))),
             matches=sp.map(tkey=sp.TNat, tvalue=sp.TRecord(
-                teamA=sp.TString, teamB=sp.TString, active=sp.TBool, finished=sp.TBool, ends=sp.TString, date=sp.TString)),
+                teamA=sp.TString, teamB=sp.TString, active=sp.TBool, finished=sp.TBool, ends=sp.TTimestamp, date=sp.TString)),
         )
 
     @sp.entry_point
@@ -703,7 +703,7 @@ class FA2(sp.Contract):
         sp.verify(~self.data.matches.contains(params.match_id),
                   message="Match Already Exists.")
         self.data.matches[params.match_id] = sp.record(
-            teamA=params.teamA, teamB=params.teamB, active=False, ends="", date="", finished=False)
+            teamA=params.teamA, teamB=params.teamB, active=False, ends=sp.timestamp(0), date=params.date, finished=False)
 
     @sp.entry_point
     def activateMatch(self, params):
@@ -719,6 +719,8 @@ class FA2(sp.Contract):
             sp.if match.active == True:
                 sp.failwith("Two Matches Cannot be Active at the same time")
         self.data.matches[params.match_id].active = True
+        ends = sp.set_type_expr(params.ends, sp.TTimestamp)
+        self.data.matches[params.match_id].ends = ends
 
     @sp.entry_point
     def endMatch(self, params):
@@ -729,6 +731,7 @@ class FA2(sp.Contract):
                   message="Match does not exists.")
         sp.verify(self.data.matches[params.match_id].active ==
                   True, message="Match is Not Active.")
+        # sp.verify(self.data.matches[params.match_id].ends <= sp.timestamp_from_utc_now(), message = "You Cannot End the Match before its Select Time Ends.")
         sp.for item in self.data.selected_tokens.items():
             sp.for token_id in item.value.tokens.elements():
                 card = self.data.tokens[token_id]
@@ -745,6 +748,8 @@ class FA2(sp.Contract):
     def selectTeam(self, params):
         sp.verify(self.data.matches[params.match_id].active == True,
                   message="Match either does not exists or is inacitve.")
+        sp.verify(sp.timestamp_from_utc_now(
+        ) <= self.data.matches[params.match_id].ends, message="Fantasy Play for the match has ended.")
         sp.verify(sp.len(params.tokens) == 5,
                   message="Only Five Tokens are Allowed.")
         sp.verify(~self.data.selected_tokens.contains(sp.sender),
@@ -1063,24 +1068,29 @@ def add_test(config, is_default=True):
         scenario.h4("Add Match")
         scenario.p("Add Match without Admin Account. Must Fail.")
         scenario += c1.addMatch(teamA="CSK", teamB="RCB",
-                                match_id=0).run(sender=u1, valid=False)
+                                match_id=0, date="3 Spet 2020").run(sender=u1, valid=False)
         scenario.p("Add Match using Admin Account.")
         scenario += c1.addMatch(teamA="CSK", teamB="RCB",
-                                match_id=0).run(sender=admin)
+                                match_id=0, date="3 Spet 2020").run(sender=admin)
         scenario.p("Add Match using Admin Account.")
         scenario += c1.addMatch(teamA="MI", teamB="RCB",
-                                match_id=1).run(sender=admin)
+                                match_id=1, date="3 Spet 2020").run(sender=admin)
         scenario.p("Add already existing Match. Must Fail.")
         scenario += c1.addMatch(teamA="CSK", teamB="RCB",
-                                match_id=0).run(sender=admin, valid=False)
+                                match_id=0, date="3 Spet 2020").run(sender=admin, valid=False)
 
         scenario.h4("Activate Match.")
+        timestamp = sp.timestamp_from_utc_now()
+        # timestamp = timestamp.add_hours(2)
         scenario.p("Activate a Match using Admin Account")
-        scenario += c1.activateMatch(match_id=0).run(sender=admin)
+        scenario += c1.activateMatch(match_id=0,
+                                     ends=timestamp).run(sender=admin)
         scenario.p("Activate a another match while a match is active. Must Fail.")
-        scenario += c1.activateMatch(match_id=1).run(sender=admin, valid=False)
+        scenario += c1.activateMatch(match_id=1,
+                                     ends=timestamp).run(sender=admin, valid=False)
         scenario.p("Activate a another match that does not exist. Must Fail.")
-        scenario += c1.activateMatch(match_id=2).run(sender=admin, valid=False)
+        scenario += c1.activateMatch(match_id=2,
+                                     ends=timestamp).run(sender=admin, valid=False)
 
         scenario.h4("Select Team Tokens.")
         scenario.p("User 1 puts 5 owned tokens in Match.")
@@ -1110,7 +1120,7 @@ def add_test(config, is_default=True):
         scenario += c1.selectTeam(tokens=[0, 1,
                                           2, 3, 4], match_id=0).run(sender=u3)
 
-        scenario.h4("End Match / Update Card Scores")
+        scenario.h4("End Match / Update Card Scores.**")
         scenario += c1.endMatch(match_id=0).run(sender=admin)
 
 ##
