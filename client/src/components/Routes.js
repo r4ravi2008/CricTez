@@ -15,6 +15,7 @@ import CardDetails from "./Pages/CardDetails";
 import SellCardDetails from "./Pages/SellCardDetails.jsx";
 import AddPlayer from "./Pages/AddPlayer";
 import MintToken from "./Pages/MintToken";
+import Match from "./Pages/Match";
 
 class Routes extends React.Component {
   render() {
@@ -49,6 +50,9 @@ class Routes extends React.Component {
         </Route>
         <Route path="/minttoken" exact>
           <MintToken />
+        </Route>
+        <Route path="/matches" exact>
+          <Match />
         </Route>
         <Redirect to="/" />
       </Switch>

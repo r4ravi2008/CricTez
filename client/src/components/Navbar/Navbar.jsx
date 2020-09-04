@@ -39,6 +39,9 @@ export default function MainNavbar(props) {
           <LinkContainer to="/minttoken">
             <Nav.Link href="">Mint Token</Nav.Link>
           </LinkContainer>
+          <LinkContainer to="/matches">
+            <Nav.Link href="">Matches</Nav.Link>
+          </LinkContainer>
         </Nav>
         <Nav>
           <Nav.Link>{state.userAddress}</Nav.Link>
