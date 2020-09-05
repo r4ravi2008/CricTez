@@ -58,8 +58,14 @@ const shortPlayer = {
   player_id: 1,
 };
 
+const playerPoints = {
+  player_id: 1,
+  points: 1,
+  rank: 1,
+};
 module.exports = {
   Player: Player,
   validatePlayer: validatePlayer,
   shortPlayer: shortPlayer,
+  playerPoints: playerPoints,
 };

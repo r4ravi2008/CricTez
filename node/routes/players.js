@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { Player, validatePlayer, shortPlayer } = require("../models/player");
+const {
+  Player,
+  validatePlayer,
+  shortPlayer,
+  playerPoints,
+} = require("../models/player");
 
 // GET ALL PLAYERS
 router.get("/", async (req, res) => {
@@ -115,6 +120,20 @@ router.post("/name/", async (req, res) => {
     const player = await Player.findOne({ name: name });
     if (player === null) {
       res.status(200).send({});
+    } else {
+      res.status(200).send(player);
+    }
+  } catch (error) {
+    res.status(400).send(error.message[0]);
+  }
+});
+
+//GET ALL PLAYERS WITH ID, RANK, POINTS
+router.get("/getplayerpoints/all", async (req, res) => {
+  try {
+    const player = await Player.find().select(playerPoints);
+    if (player === null) {
+      res.status(404).send("Request Failed");
     } else {
       res.status(200).send(player);
     }
