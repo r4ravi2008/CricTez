@@ -1,5 +1,11 @@
 import React from "react";
 import "./Sidebar.css";
+import { HiHome } from "react-icons/hi";
+import { FaExchangeAlt } from "react-icons/fa";
+import { GiCricketBat } from "react-icons/gi";
+import { BsSearch } from "react-icons/bs";
+import { HiUserCircle } from "react-icons/hi";
+import { LinkContainer } from "react-router-bootstrap";
 
 function Sidebar() {
   return (
@@ -7,19 +13,29 @@ function Sidebar() {
       <div className="sidebar-sticky">
         <ul className="nav flex-column">
           <li className="nav-item active">
-            <a className="nav-link" href="#"></a>
+            <LinkContainer to="/">
+              <HiHome className="fa-icons" />
+            </LinkContainer>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#"></a>
+            <LinkContainer to="/sell">
+              <FaExchangeAlt className="fa-icons" />
+            </LinkContainer>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#"></a>
+            <LinkContainer to="/search">
+              <BsSearch className="fa-icons" />
+            </LinkContainer>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#"></a>
+            <LinkContainer to="/play">
+              <GiCricketBat className="fa-icons" />
+            </LinkContainer>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#"></a>
+            <LinkContainer to="/profile">
+              <HiUserCircle className="fa-icons" />
+            </LinkContainer>
           </li>
         </ul>
       </div>

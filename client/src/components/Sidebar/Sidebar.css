@@ -20,7 +20,16 @@
   justify-content: center;
   align-items: center;
   border-radius: 30px;
+  cursor: pointer;
 }
 .nav-item.active {
   background-color: var(--primary-color);
+}
+.fa-icons {
+  color: white;
+  vertical-align: middle;
+  font-size: 1.5rem;
+}
+.nav-item:hover {
+  background-color: black;
 }
