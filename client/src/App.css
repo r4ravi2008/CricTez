@@ -1,5 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap");
+
 body {
   background-color: var(--background-color-dark);
+  font-family: "Poppins", sans-serif;
 }
 .fluid {
   margin: 0;
@@ -11,7 +14,7 @@ body {
 }
 .wrapper-light {
   flex: 1;
-  min-height: 100vh;
+  min-height: 90vh;
   margin: 0 90px; /*Same as sidebar width To be removed in mobile view*/
   background-color: var(--background-color-light);
   padding: 2rem 1rem;

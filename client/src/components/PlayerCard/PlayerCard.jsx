@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Fragment } from "react";
 import { useState } from "react";
 import { fetchTokenDetails } from "../../api/playerMetadata";
 import { Card, Spinner, Button } from "react-bootstrap";
 import "./PlayerCard.css";
 import { useHistory } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
+import { teamColors } from "../../constants/teamColors";
 
 export default function PlayerCard(props) {
   const { data } = props;
@@ -28,40 +29,75 @@ export default function PlayerCard(props) {
   }
 
   return (
-    <Card className="player__card">
-      <Card.Img
-        variant="top"
-        src={tokenDetails.image_url}
-        className="player__image"
-        onClick={navigate}
-      />
+    <Card className="player-card">
       <Card.Body onClick={navigate}>
-        <Card.Title className="player__name">{tokenDetails.name}</Card.Title>
-        <div className="player__info heading">
-          <div>Matches</div>
-          <div>Runs</div>
-          <div>Wickets</div>
-        </div>
-        <div className="player__info">
-          <div>{tokenDetails.matches}</div>
-          <div>{tokenDetails.runs}</div>
-          <div>{tokenDetails.wickets}</div>
+        <div className="wrapper-dark">
+          <div className="card-upper">
+            <div className="card-price-heading">
+              {tokenDetails.sale.price ? (
+                "Price"
+              ) : (
+                <a
+                  className="sell-button"
+                  style={{
+                    borderColor: teamColors[tokenDetails.team],
+                    borderWidth: 1,
+                    borderStyle : "solid"
+                  }}
+                >
+                  Sell
+                </a>
+              )}
+            </div>
+            <div className="card-price-section">
+              {tokenDetails.sale.price ? (
+                <Fragment>
+                  <div className="price-value">
+                    {parseFloat(
+                      parseInt(tokenDetails.sale.price) / 1000000
+                    ).toFixed(2)}
+                  </div>
+                  <img
+                    className="tez-logo"
+                    src={require("../../assests/tez-logo.png")}
+                  />
+                </Fragment>
+              ) : (
+                <div className="price-value">Owned</div>
+              )}
+            </div>
+            <div className="card-usd-heading">
+              {tokenDetails.sale.price ? "$ 26.75" : "$ 0.00"}
+            </div>
+          </div>
         </div>
       </Card.Body>
-      <Card.Footer className="player__footer">
-        <div className="text-muted">Token ID : {tokenDetails.token_id}</div>
-        {tokenDetails.role} <br />
-        {props.owned ? (
-          <Button
-            className="btn-warning"
-            onClick={() => histroy.push("/sell/token/", tokenDetails)}
-          >
-            Sell
-          </Button>
-        ) : (
-          ""
-        )}
-      </Card.Footer>
+      <div className="player-image">
+        <img className="playerimage" src={tokenDetails.image_url} alt="img" />
+      </div>
+      <div
+        className="card-lower"
+        style={{ backgroundColor: teamColors[tokenDetails.team] }}
+      >
+        <div className="player-name-section">
+          <div className="player-firstname">
+            {tokenDetails.name.split(" ")[0]}
+          </div>
+          <div className="player-lastname">
+            {tokenDetails.name.split(" ")[1]}
+          </div>
+          <div className="player-role">{tokenDetails.image_url.role}</div>
+        </div>
+        <div className="team-logo">
+          <img src={require("../../assests/rcb-logo.png")} alt="" />
+        </div>
+        <div className="card-score-section">
+          <div className="score-heading">Card Score</div>
+          <div className="score-value">
+            {parseFloat(tokenDetails.card_score).toFixed(2)}
+          </div>
+        </div>
+      </div>
     </Card>
   );
 }

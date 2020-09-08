@@ -13,7 +13,7 @@ function OwnedCards() {
   }, []);
 
   return (
-    <Container style={{ textAlign: "center" }}>
+    <Container fluid style={{ textAlign: "center" }}>
       {!tokens.length ? (
         <h3>Loading...</h3>
       ) : (
