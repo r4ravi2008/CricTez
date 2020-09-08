@@ -1,0 +1,19 @@
+body {
+  background-color: var(--background-color-dark);
+}
+.fluid {
+  margin: 0;
+  width: 100%;
+}
+.container-main {
+  display: flex;
+  flex-direction: row;
+}
+.wrapper-light {
+  flex: 1;
+  min-height: 100vh;
+  margin: 0 90px; /*Same as sidebar width To be removed in mobile view*/
+  background-color: var(--background-color-light);
+  padding: 2rem 1rem;
+  border-radius: 50px;
+}

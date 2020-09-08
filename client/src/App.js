@@ -8,6 +8,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { ThanosWallet } from "@thanos-wallet/dapp";
 import { contractAddress } from "./constants/contract";
 import { SET_CONTRACT, SET_WALLET_ADDRESS } from "./context/types";
+import Sidebar from "./components/Sidebar/Sidebar";
+import { Row, Col } from "react-bootstrap";
 
 function App() {
   const [state, dispatch] = useAuthContext();
@@ -50,7 +52,12 @@ function App() {
     <div className="App">
       <Router>
         <Navbar />
-        <Routes />
+        <Row className="fluid">
+          <Sidebar />
+          <div className="wrapper-light">
+            <Routes />
+          </div>
+        </Row>
       </Router>
     </div>
   );
