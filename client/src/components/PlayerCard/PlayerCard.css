@@ -128,3 +128,12 @@
   color: white;
   text-decoration: none;
 }
+.skeleton-loading {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+.spinner {
+  color: var(--background-color-light);
+}

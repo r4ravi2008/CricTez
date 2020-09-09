@@ -6,40 +6,41 @@ import { GiCricketBat } from "react-icons/gi";
 import { BsSearch } from "react-icons/bs";
 import { HiUserCircle } from "react-icons/hi";
 import { LinkContainer } from "react-router-bootstrap";
+import Nav from "react-bootstrap/esm/Nav";
 
 function Sidebar() {
   return (
-    <nav className="col-md-1 sidebar">
+    <Nav className="col-md-1 sidebar">
       <div className="sidebar-sticky">
         <ul className="nav flex-column">
-          <li className="nav-item active">
-            <LinkContainer to="/">
+          <LinkContainer to="/">
+            <li className="nav-item">
               <HiHome className="fa-icons" />
-            </LinkContainer>
-          </li>
-          <li className="nav-item">
-            <LinkContainer to="/sell">
+            </li>
+          </LinkContainer>
+          <LinkContainer to="/sell">
+            <li className="nav-item">
               <FaExchangeAlt className="fa-icons" />
-            </LinkContainer>
-          </li>
-          <li className="nav-item">
-            <LinkContainer to="/search">
+            </li>
+          </LinkContainer>
+          <LinkContainer to="/search">
+            <li className="nav-item">
               <BsSearch className="fa-icons" />
-            </LinkContainer>
-          </li>
-          <li className="nav-item">
-            <LinkContainer to="/play">
+            </li>
+          </LinkContainer>
+          <LinkContainer to="/play">
+            <li className="nav-item">
               <GiCricketBat className="fa-icons" />
-            </LinkContainer>
-          </li>
-          <li className="nav-item">
-            <LinkContainer to="/profile">
+            </li>
+          </LinkContainer>
+          <LinkContainer to="/profile">
+            <li className="nav-item">
               <HiUserCircle className="fa-icons" />
-            </LinkContainer>
-          </li>
+            </li>
+          </LinkContainer>
         </ul>
       </div>
-    </nav>
+    </Nav>
   );
 }
 

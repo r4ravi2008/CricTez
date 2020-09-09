@@ -1,6 +1,7 @@
 .navbar {
   background-color: var(--background-color-dark);
   height: 90px; /* Same as sidebar width*/
+  z-index: 2;
 }
 .navbar__header {
   font-size: 2rem;

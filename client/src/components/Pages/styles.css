@@ -18,8 +18,31 @@
   display: flex;
 }
 .from__addplayer {
-  flex : 0.4
+  flex: 0.4;
 }
-.addplayer__card  {
+.addplayer__card {
   flex: 0.6;
+}
+.form-group > input,
+.form-group > input:focus {
+  background-color: var(--background-color-dark);
+  border: none;
+  outline: none;
+  box-shadow: none;
+  border-radius: 1rem;
+  color: white;
+}
+.form-group .form-label {
+  color: var(--accent-color);
+}
+.btn-primary {
+  background-color: var(--primary-color) !important;
+  border: none;
+  outline: none;
+}
+.btn-primary:hover,
+.btn-primary.disabled {
+  background-color: var(--primary-color-dark);
+  border: none;
+  outline: none;
 }

@@ -16,6 +16,7 @@ import SellCardDetails from "./Pages/SellCardDetails.jsx";
 import AddPlayer from "./Pages/AddPlayer";
 import MintToken from "./Pages/MintToken";
 import Match from "./Pages/Match";
+import Search from "./Pages/Search";
 
 class Routes extends React.Component {
   render() {
@@ -35,6 +36,9 @@ class Routes extends React.Component {
         </Route>
         <Route path="/play">
           <Play />
+        </Route>
+        <Route path="/search" exact>
+          <Search />
         </Route>
         <Route path="/profile">
           <Profile />

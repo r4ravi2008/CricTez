@@ -22,7 +22,7 @@ export default function MainNavbar(props) {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
           <LinkContainer to="/">
-            <Nav.Link href="">Marketplace</Nav.Link>
+            <Nav.Link href="">MarketPlace</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/sell">
             <Nav.Link href="">Sell</Nav.Link>

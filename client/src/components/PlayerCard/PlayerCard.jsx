@@ -4,7 +4,6 @@ import { fetchTokenDetails } from "../../api/playerMetadata";
 import { Card, Spinner, Button } from "react-bootstrap";
 import "./PlayerCard.css";
 import { useHistory } from "react-router-dom";
-import Skeleton from "react-loading-skeleton";
 import { teamColors } from "../../constants/teamColors";
 
 export default function PlayerCard(props) {
@@ -20,17 +19,24 @@ export default function PlayerCard(props) {
     histroy.push(`/card/${tokenDetails.token_id}`, tokenDetails);
   };
 
-  if (!tokenDetails) {
-    return (
-      <div className="loading">
-        <Spinner animation="border" role="status" />
-      </div>
-    );
-  }
+  const variants = {
+    visible: { opacity: 1 },
+    hidden: { opacity: 0 },
+  };
 
-  return (
+  const SkeletonCard = () => (
     <Card className="player-card">
-      <Card.Body onClick={navigate}>
+      <Card.Body>
+        <div className="wrapper-dark skeleton-loading">
+          <Spinner className="spinner" animation="border" />
+        </div>
+      </Card.Body>
+    </Card>
+  );
+
+  return tokenDetails ? (
+    <Card className="player-card" onClick={navigate}>
+      <Card.Body>
         <div className="wrapper-dark">
           <div className="card-upper">
             <div className="card-price-heading">
@@ -42,7 +48,7 @@ export default function PlayerCard(props) {
                   style={{
                     borderColor: teamColors[tokenDetails.team],
                     borderWidth: 1,
-                    borderStyle : "solid"
+                    borderStyle: "solid",
                   }}
                 >
                   Sell
@@ -99,5 +105,7 @@ export default function PlayerCard(props) {
         </div>
       </div>
     </Card>
+  ) : (
+    <SkeletonCard />
   );
 }

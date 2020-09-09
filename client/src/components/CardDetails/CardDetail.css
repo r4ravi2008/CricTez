@@ -1,3 +1,11 @@
+.card-detail-container {
+  color: var(--accent-color);
+  padding: 2rem 4rem;
+  background-color: var(--background-color-dark);
+  border-radius: 50px;
+  margin: 1rem;
+  margin-top: 0;
+}
 .card__column > p,
 .card__column > h4 {
   margin-bottom: 0;
@@ -11,4 +19,12 @@
 .card__buybutton {
   padding: 0.7rem 3rem;
   border-radius: 2rem;
+  background-color: var(--primary-color);
+  border: none;
+  transition: all 0.2s ease-in-out;
+}
+.card__buybutton:hover {
+  background-color: var(--primary-color-dark);
+  transform: scale(1.05);
+  border: none;
 }

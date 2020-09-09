@@ -10,7 +10,7 @@ function PlayerDetail(props) {
   }, [props]);
 
   return (
-    <Container>
+    <Container className='player-detail-container'>
       <Row className="playerdetails__hero">
         <Col md={3} className="playerdetails__image">
           <img src={data.image_url} alt="" />

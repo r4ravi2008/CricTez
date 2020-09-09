@@ -9,8 +9,9 @@ function OwnedCards() {
   const [tokens, setTokens] = useState([]);
 
   useEffect(() => {
-    fetchOwnedTokens(state.userAddress).then((res) => setTokens(res));
-  }, []);
+    if (state.userAddress)
+      fetchOwnedTokens(state.userAddress).then((res) => setTokens(res));
+  }, [state]);
 
   return (
     <Container fluid style={{ textAlign: "center" }}>

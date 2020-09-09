@@ -36,43 +36,37 @@ function CardDetails(props) {
   console.log(card);
   return (
     <React.Fragment>
-      <Container>
+      <div className="card-detail-container">
         <div className="error">{error}</div>
-        <br />
         {card ? (
-          <div>
-            <Row className="card__info">
-              <Col className="card__column" md={1}>
-                <p>Key</p>
-                <h4>{card.token_id}</h4>
-              </Col>
-              <Col className="card__column">
-                <p>Card Score</p>
-                <h4>{card.card_score}</h4>
-              </Col>
-              <Col className="card__column">
-                <p>Price</p>
-                <h4>{parseInt(card?.sale?.price) / 1000000} xtz</h4>
-              </Col>
-              <Col className="card__column">
-                <p>Owner</p>
-                <h4>{card?.sale?.owner}</h4>
-              </Col>
-              <Col>
-                <Button className="card__buybutton" onClick={buyToken}>
-                  Buy
-                </Button>
-              </Col>
-            </Row>
-            <br />
-            <hr />
-            <br />
-          </div>
+          <Row className="card__info">
+            <Col className="card__column" md={1}>
+              <p>Key</p>
+              <h4>{card.token_id}</h4>
+            </Col>
+            <Col className="card__column">
+              <p>Card Score</p>
+              <h4>{card.card_score}</h4>
+            </Col>
+            <Col className="card__column">
+              <p>Price</p>
+              <h4>{parseInt(card?.sale?.price) / 1000000} xtz</h4>
+            </Col>
+            <Col className="card__column">
+              <p>Owner</p>
+              <h4>{card?.sale?.owner}</h4>
+            </Col>
+            <Col>
+              <Button className="card__buybutton" onClick={buyToken}>
+                Buy
+              </Button>
+            </Col>
+          </Row>
         ) : (
           " "
         )}
         {tCompleted ? "Token Bought Successfully" : ""}
-      </Container>
+      </div>
       <PlayerDetail data={props.data} />
     </React.Fragment>
   );

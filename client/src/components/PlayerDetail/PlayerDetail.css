@@ -1,3 +1,6 @@
+.player-detail-container {
+  color: var(--accent-color);
+}
 .playerdetails__image > img {
   width: 100%;
 }
@@ -41,6 +44,10 @@
   font-weight: 700;
 }
 .playerdetails__bio {
-    font-size: 1.1rem;
-    font-weight: 400;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+.player__info {
+  display: flex;
+  justify-content: space-evenly;
 }
