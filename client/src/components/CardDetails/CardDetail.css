@@ -1,20 +1,27 @@
 .card-detail-container {
   color: var(--accent-color);
-  padding: 2rem 4rem;
-  background-color: var(--background-color-dark);
-  border-radius: 50px;
-  margin: 1rem;
-  margin-top: 0;
+  margin: 0 2rem;
+  margin-top: 1rem;
 }
 .card__column > p,
 .card__column > h4 {
   margin-bottom: 0;
   padding-bottom: 0;
 }
+.card__column > h4 {
+  font-size: 2rem;
+  font-weight: 600;
+}
 .card__info {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  position: relative;
+  background-color: var(--background-color-dark);
+  padding: 1rem 2rem;
+  margin: 1rem;
+  margin-top: 0;
+  border-radius: 50px;
 }
 .card__buybutton {
   padding: 0.7rem 3rem;
@@ -27,4 +34,13 @@
   background-color: var(--primary-color-dark);
   transform: scale(1.05);
   border: none;
+}
+.card-player-img-container {
+  height: 200px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+.card-player-img-container > img {
+  height: 100%;
 }

@@ -6,6 +6,7 @@ import "./PlayerCard.css";
 import { useHistory } from "react-router-dom";
 import { teamColors } from "../../constants/teamColors";
 import { motion, AnimatePresence } from "framer-motion";
+import { LinkContainer } from "react-router-bootstrap";
 
 export default function PlayerCard(props) {
   const { data } = props;
@@ -21,7 +22,7 @@ export default function PlayerCard(props) {
   };
 
   const variants = {
-    visible: { opacity: 1, transition: { duration: 0.5 } },
+    visible: { opacity: 1, transition: { duration: 0.75 } },
     hidden: { opacity: 0 },
   };
 
@@ -31,17 +32,15 @@ export default function PlayerCard(props) {
         className="card-container"
         initial={{ opacity: 1 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0, transition: { duration: 0.5 } }}
+        exit={{ opacity: 0, transition: { duration: 0.75, type: "tween" } }}
       >
-        <Card className="player-card" onClick={navigate}>
+        <Card className="player-card">
           <Card.Body>
             <div className="wrapper-dark">
               <div className="card-upper">
                 <div className="card-price-heading">Price</div>
                 <div className="card-price-section">
-                  <div className="price-value loader">
-                    <Spinner animation="border" className="spinner" />
-                  </div>
+                  <div className="price-value loader">Loading...</div>
                 </div>
                 <div className="card-usd-heading">$ 0.00</div>
               </div>
@@ -71,9 +70,8 @@ export default function PlayerCard(props) {
                   <a
                     className="sell-button"
                     style={{
-                      borderColor: teamColors[tokenDetails.team],
-                      borderWidth: 1,
-                      borderStyle: "solid",
+                      backgroundColor: teamColors[tokenDetails.team],
+                      zIndex: 2,
                     }}
                   >
                     Sell

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./PlayerDetail.css";
 import { Container, Row, Col } from "react-bootstrap";
+import { teamColors } from "../../constants/teamColors";
 
 function PlayerDetail(props) {
   const [data, setData] = useState({});
@@ -10,12 +11,17 @@ function PlayerDetail(props) {
   }, [props]);
 
   return (
-    <Container className='player-detail-container'>
-      <Row className="playerdetails__hero">
-        <Col md={3} className="playerdetails__image">
-          <img src={data.image_url} alt="" />
-        </Col>
-        <Col md={3} className="playerdetails__info">
+    <div className="player-detail-container">
+      <Row
+        className="playerdetails__hero"
+        style={{ backgroundColor: teamColors[data.team] }}
+      >
+        {props.showImage ? (
+          <Col md={3} className="playerdetails__image">
+            <img src={data.image_url} alt="" />
+          </Col>
+        ) : null}
+        <Col md={props.showImage ? 3 : 4} className="playerdetails__info">
           <div className="playerdetails__name">
             <h3>{data.name ? data.name.split(" ")[0] : "loading"}</h3>
             <h1>{data.name ? data.name.split(" ")[1] : "loading"}</h1>
@@ -27,7 +33,10 @@ function PlayerDetail(props) {
             <p>{data.team}</p>
           </div>
         </Col>
-        <Col md={2} className="playerdetails__stats score">
+        <Col
+          md={props.showImage ? 2 : 4}
+          className="playerdetails__stats score"
+        >
           <div className="player__info playerdetails__heading">
             <div>Player Score</div>
           </div>
@@ -48,8 +57,9 @@ function PlayerDetail(props) {
           </div>
         </Col>
       </Row>
-      <br />
-      <div className="playerdetails__bio">{data.bio}</div>
+      <div className="playerdetails__bio">
+        {data.bio}
+      </div>
       <div className="player__details__stats">
         <div className="batting__stats">
           <h3></h3>
@@ -59,7 +69,7 @@ function PlayerDetail(props) {
           <h3></h3>
         </div>
       </div>
-    </Container>
+    </div>
   );
 }
 

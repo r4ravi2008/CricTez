@@ -39,35 +39,54 @@ function CardDetails(props) {
       <div className="card-detail-container">
         <div className="error">{error}</div>
         {card ? (
-          <Row className="card__info">
-            <Col className="card__column" md={1}>
-              <p>Key</p>
-              <h4>{card.token_id}</h4>
-            </Col>
-            <Col className="card__column">
-              <p>Card Score</p>
-              <h4>{card.card_score}</h4>
-            </Col>
-            <Col className="card__column">
-              <p>Price</p>
-              <h4>{parseInt(card?.sale?.price) / 1000000} xtz</h4>
-            </Col>
-            <Col className="card__column">
-              <p>Owner</p>
-              <h4>{card?.sale?.owner}</h4>
-            </Col>
-            <Col>
-              <Button className="card__buybutton" onClick={buyToken}>
-                Buy
-              </Button>
-            </Col>
-          </Row>
+          <>
+            <br />
+            <br />
+            <br />
+            <Row className="card__info">
+              <Col md={2}></Col>
+              <Col className="card__column">
+                <p>Key</p>
+                <h4>{card.token_id}</h4>
+              </Col>
+              <Col className="card__column">
+                <p>Card Score</p>
+                <h4>{parseFloat(card?.card_score).toFixed(2)}</h4>
+              </Col>
+              <Col className="card__column">
+                <p>Price</p>
+                <h4>
+                  {parseFloat(parseInt(card?.sale?.price) / 1000000).toFixed(2)}
+                  <img
+                    className="tez-logo"
+                    src={require("../../assests/tez-logo.png")}
+                  />
+                </h4>
+              </Col>
+              <Col className="card__column">
+                <p>Owner</p>
+                <h4>{card?.sale?.owner.slice(0, 10)}...</h4>
+              </Col>
+              <Col>
+                <Button className="card__buybutton" onClick={buyToken}>
+                  Buy
+                </Button>
+              </Col>
+              <div className="card-player-img-container">
+                <img
+                  className="card-player-img"
+                  src={card.image_url}
+                  alt="img"
+                />
+              </div>
+            </Row>
+          </>
         ) : (
           " "
         )}
         {tCompleted ? "Token Bought Successfully" : ""}
       </div>
-      <PlayerDetail data={props.data} />
+      <PlayerDetail data={props.data} showImage={false} />
     </React.Fragment>
   );
 }

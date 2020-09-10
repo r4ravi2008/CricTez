@@ -1,5 +1,17 @@
 .player-detail-container {
   color: var(--accent-color);
+  margin-top: 2rem;
+}
+.playerdetails__hero {
+  border-radius: 50px 50px 0 0;
+  padding: 2rem 3rem;
+  margin: 1rem 3rem;
+  margin-bottom: 0;
+}
+.playerdetails__image {
+  padding: 1rem;
+  background-color: var(--background-color-dark);
+  border-radius: 50%;
 }
 .playerdetails__image > img {
   width: 100%;
@@ -44,8 +56,13 @@
   font-weight: 700;
 }
 .playerdetails__bio {
+  border-radius: 0 0 50px 50px;
+  padding: 2rem 3rem;
   font-size: 1.1rem;
+  margin: 1rem 3rem;
+  margin-top: 0;
   font-weight: 400;
+  background-color: var(--background-color-dark);
 }
 .player__info {
   display: flex;

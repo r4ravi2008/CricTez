@@ -126,10 +126,12 @@
   font-weight: 500;
   padding: 0.1rem 0.5rem;
   border-radius: 10px;
+  transition: all 0.2s ease-in-out;
 }
 .sell-button:hover {
   color: white;
   text-decoration: none;
+  transform: scale(1.05);
 }
 .skeleton-loading {
   display: flex;

@@ -1,1 +1,1 @@
-export const server = "http://localhost:4000/api"
+export const server = "https://tranquil-earth-81896.herokuapp.com/api";

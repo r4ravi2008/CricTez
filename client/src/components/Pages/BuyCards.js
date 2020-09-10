@@ -8,6 +8,7 @@ function BuyCards() {
 
   useEffect(() => {
     fetchTokensOnSale().then((res) => setTokens(res));
+    window.scrollTo(0, 0);
   }, []);
 
   return (
