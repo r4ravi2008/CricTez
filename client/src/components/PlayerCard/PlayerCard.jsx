@@ -5,6 +5,7 @@ import { Card, Spinner, Button } from "react-bootstrap";
 import "./PlayerCard.css";
 import { useHistory } from "react-router-dom";
 import { teamColors } from "../../constants/teamColors";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function PlayerCard(props) {
   const { data } = props;
@@ -20,91 +21,116 @@ export default function PlayerCard(props) {
   };
 
   const variants = {
-    visible: { opacity: 1 },
+    visible: { opacity: 1, transition: { duration: 0.5 } },
     hidden: { opacity: 0 },
   };
 
   const SkeletonCard = () => (
-    <Card className="player-card">
-      <Card.Body>
-        <div className="wrapper-dark skeleton-loading">
-          <Spinner className="spinner" animation="border" />
-        </div>
-      </Card.Body>
-    </Card>
+    <AnimatePresence>
+      <motion.div
+        className="card-container"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0, transition: { duration: 0.5 } }}
+      >
+        <Card className="player-card" onClick={navigate}>
+          <Card.Body>
+            <div className="wrapper-dark">
+              <div className="card-upper">
+                <div className="card-price-heading">Price</div>
+                <div className="card-price-section">
+                  <div className="price-value loader">
+                    <Spinner animation="border" className="spinner" />
+                  </div>
+                </div>
+                <div className="card-usd-heading">$ 0.00</div>
+              </div>
+            </div>
+          </Card.Body>
+          <div className="player-image"></div>
+        </Card>
+      </motion.div>
+    </AnimatePresence>
   );
 
   return tokenDetails ? (
-    <Card className="player-card" onClick={navigate}>
-      <Card.Body>
-        <div className="wrapper-dark">
-          <div className="card-upper">
-            <div className="card-price-heading">
-              {tokenDetails.sale.price ? (
-                "Price"
-              ) : (
-                <a
-                  className="sell-button"
-                  style={{
-                    borderColor: teamColors[tokenDetails.team],
-                    borderWidth: 1,
-                    borderStyle: "solid",
-                  }}
-                >
-                  Sell
-                </a>
-              )}
+    <motion.div
+      className="card-container"
+      variants={variants}
+      initial="hidden"
+      animate="visible"
+    >
+      <Card className="player-card" onClick={navigate}>
+        <Card.Body>
+          <div className="wrapper-dark">
+            <div className="card-upper">
+              <div className="card-price-heading">
+                {tokenDetails.sale.price ? (
+                  "Price"
+                ) : (
+                  <a
+                    className="sell-button"
+                    style={{
+                      borderColor: teamColors[tokenDetails.team],
+                      borderWidth: 1,
+                      borderStyle: "solid",
+                    }}
+                  >
+                    Sell
+                  </a>
+                )}
+              </div>
+              <div className="card-price-section">
+                {tokenDetails.sale.price ? (
+                  <Fragment>
+                    <div className="price-value">
+                      {parseFloat(
+                        parseInt(tokenDetails.sale.price) / 1000000
+                      ).toFixed(2)}
+                    </div>
+                    <img
+                      className="tez-logo"
+                      src={require("../../assests/tez-logo.png")}
+                    />
+                  </Fragment>
+                ) : (
+                  <div className="price-value">Owned</div>
+                )}
+              </div>
+              <div className="card-usd-heading">
+                {tokenDetails.sale.price ? "$ 26.75" : "$ 0.00"}
+              </div>
             </div>
-            <div className="card-price-section">
-              {tokenDetails.sale.price ? (
-                <Fragment>
-                  <div className="price-value">
-                    {parseFloat(
-                      parseInt(tokenDetails.sale.price) / 1000000
-                    ).toFixed(2)}
-                  </div>
-                  <img
-                    className="tez-logo"
-                    src={require("../../assests/tez-logo.png")}
-                  />
-                </Fragment>
-              ) : (
-                <div className="price-value">Owned</div>
-              )}
+          </div>
+        </Card.Body>
+        <div className="player-image">
+          <img className="playerimage" src={tokenDetails.image_url} alt="img" />
+        </div>
+        <div
+          className="card-lower"
+          style={{ backgroundColor: teamColors[tokenDetails.team] }}
+        >
+          <div className="player-name-section">
+            <div className="player-firstname">
+              {tokenDetails.name.split(" ")[0]}
             </div>
-            <div className="card-usd-heading">
-              {tokenDetails.sale.price ? "$ 26.75" : "$ 0.00"}
+            <div className="player-lastname">
+              {tokenDetails.name.split(" ")[1]}
+            </div>
+            <div className="player-role">{tokenDetails.image_url.role}</div>
+          </div>
+          <div className="team-logo">
+            <img src={require("../../assests/rcb-logo.png")} alt="" />
+          </div>
+          <div className="card-score-section">
+            <div className="score-heading">Card Score</div>
+            <div className="score-value">
+              {parseFloat(tokenDetails.card_score).toFixed(2)}
             </div>
           </div>
         </div>
-      </Card.Body>
-      <div className="player-image">
-        <img className="playerimage" src={tokenDetails.image_url} alt="img" />
-      </div>
-      <div
-        className="card-lower"
-        style={{ backgroundColor: teamColors[tokenDetails.team] }}
-      >
-        <div className="player-name-section">
-          <div className="player-firstname">
-            {tokenDetails.name.split(" ")[0]}
-          </div>
-          <div className="player-lastname">
-            {tokenDetails.name.split(" ")[1]}
-          </div>
-          <div className="player-role">{tokenDetails.image_url.role}</div>
-        </div>
-        <div className="team-logo">
-          <img src={require("../../assests/rcb-logo.png")} alt="" />
-        </div>
-        <div className="card-score-section">
-          <div className="score-heading">Card Score</div>
-          <div className="score-value">
-            {parseFloat(tokenDetails.card_score).toFixed(2)}
-          </div>
-        </div>
-      </div>
-    </Card>
+      </Card>
+    </motion.div>
   ) : (
     <SkeletonCard />
   );
