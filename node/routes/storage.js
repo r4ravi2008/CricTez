@@ -82,6 +82,24 @@ router.get("/owned/:address", async (req, res) => {
   }
 });
 
+// GET OWNED TOKENS NOT ON SALE
+router.get("/owned/select/:address", async (req, res) => {
+  const address = req.params.address;
+  try {
+    const response = await axios.get(
+      `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.LEDGER_BIGMAP}/values`
+    );
+    const bigmap = response.data;
+    const owned = bigmap.filter((item) => item.key === address);
+    if (!owned.length) res.status(200).send("No Tokens");
+    const ownedTokens = owned[0].value["0@set"];
+    console.log(ownedTokens);
+    res.status(200).send(ownedTokens);
+  } catch (error) {
+    res.status(400).send(error.message[0]);
+  }
+});
+
 // GET ALL TOKENS
 router.get("/tokens", async (req, res) => {
   try {

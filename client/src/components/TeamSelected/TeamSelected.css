@@ -1,0 +1,6 @@
+.wrapper-small-dark {
+  min-height: 40vh;
+  background-color: var(--background-color-dark);
+  margin-left: 1.75rem;
+  margin-right: 1.75rem;
+}

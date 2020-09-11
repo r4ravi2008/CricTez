@@ -25,6 +25,7 @@ function AddPlayer() {
       const operation = await state.contract.methods
         .addPlayer(1, metadata, playerName, playerId)
         .send();
+
       await operation.confirmation();
       console.log("Transaction Completed");
     } catch (error) {

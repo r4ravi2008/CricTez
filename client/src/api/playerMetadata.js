@@ -25,9 +25,9 @@ export const fetchTokenDetails = async (id) => {
   console.log("Fetch Token Details");
   try {
     const res = await axios.get(`${server}/storage/tokens/tokendetails/${id}`);
-    return res.data;
+    if (res.status == 200) return res.data;
   } catch (error) {
-    return { error };
+    console.log({ error });
   }
 };
 

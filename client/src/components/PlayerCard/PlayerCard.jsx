@@ -14,7 +14,9 @@ export default function PlayerCard(props) {
   const histroy = useHistory();
 
   useEffect(() => {
-    fetchTokenDetails(data.key).then((res) => setTokenDetails(res));
+    fetchTokenDetails(data.key).then((res) => {
+      setTokenDetails(res);
+    });
   }, [data.key]);
 
   const navigate = () => {

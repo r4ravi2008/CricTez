@@ -65,7 +65,7 @@ function CardDetails(props) {
               </Col>
               <Col className="card__column">
                 <p>Owner</p>
-                <h4>{card?.sale?.owner.slice(0, 10)}...</h4>
+                <h4>{card?.sale?.owner?.slice(0, 10)}...</h4>
               </Col>
               <Col>
                 <Button className="card__buybutton" onClick={buyToken}>
