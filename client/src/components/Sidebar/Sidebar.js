@@ -1,7 +1,7 @@
 import React from "react";
 import "./Sidebar.css";
 import { HiHome } from "react-icons/hi";
-import { FaExchangeAlt, FaRegAddressCard } from "react-icons/fa";
+import { FaExchangeAlt, FaRegAddressCard  } from "react-icons/fa";
 import { GiCricketBat } from "react-icons/gi";
 import { BsSearch } from "react-icons/bs";
 import { HiUserCircle } from "react-icons/hi";
