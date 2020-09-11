@@ -59,6 +59,7 @@ export default function PlayerCard(props) {
       variants={variants}
       initial="hidden"
       animate="visible"
+      exit="exit"
     >
       <Card
         className="player-card"

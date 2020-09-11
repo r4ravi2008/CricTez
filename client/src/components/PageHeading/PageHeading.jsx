@@ -12,7 +12,7 @@ function PageHeading({ text }) {
     final: { opacity: 1, y: 0, transition: { duration: 0.5, type: "tween" } },
   };
   return (
-    <motion.div className="page-heading-container">
+    <div className="page-heading-container">
       <br />
       <div style={{ overflow: "hidden", height: "3.2rem" }}>
         <motion.h4
@@ -37,7 +37,7 @@ function PageHeading({ text }) {
       <br />
       <hr />
       <br />
-    </motion.div>
+    </div>
   );
 }
 
