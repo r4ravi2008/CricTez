@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import PlayerCard from "../PlayerCard/PlayerCard";
+import PlayerCard from "../components/PlayerCard/PlayerCard";
 import Container from "react-bootstrap/Container";
-import { fetchTokensOnSale } from "../../api/playerMetadata";
+import { fetchTokensOnSale } from "../api/playerMetadata";
 
 function BuyCards() {
   const [tokens, setTokens] = useState([]);

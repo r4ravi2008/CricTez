@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Container, Button } from "react-bootstrap";
-import { fetchOwnedTokens } from "../../api/playerMetadata";
-import PlayerCard from "../PlayerCard/PlayerCard";
-import { useAuthContext } from "../../context/auth/authContext";
+import { fetchOwnedTokens } from "../api/playerMetadata";
+import PlayerCard from "../components/PlayerCard/PlayerCard";
+import { useAuthContext } from "../context/auth/authContext";
 
 function OwnedCards() {
   const [state, dispatch] = useAuthContext();

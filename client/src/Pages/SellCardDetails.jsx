@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import PlayerCard from "../PlayerCard/PlayerCard";
-import PlayerDetail from "../PlayerDetail/PlayerDetail";
+import PlayerCard from "../components/PlayerCard/PlayerCard";
+import PlayerDetail from "../components/PlayerDetail/PlayerDetail";
 import { Container, Form, Button } from "react-bootstrap";
 import "./styles.css";
-import { useAuthContext } from "../../context/auth/authContext";
+import { useAuthContext } from "../context/auth/authContext";
 
 function SellCardDetails(props) {
   const [state, dispatch] = useAuthContext();

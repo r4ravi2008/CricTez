@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams, useHistory } from "react-router-dom";
-import CardDetail from "../CardDetails/CardDetail.jsx";
+import CardDetail from "../components/CardDetails/CardDetail.jsx";
 
 function CardDetails(props) {
   let { id } = useParams();

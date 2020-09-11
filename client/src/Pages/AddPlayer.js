@@ -1,33 +1,29 @@
 import React, { useState } from "react";
-import { Container, Form, Button, InputGroup } from "react-bootstrap";
-import PlayerCard from "../PlayerCard/PlayerCard";
+import { Container, Form, Button } from "react-bootstrap";
+import PlayerCard from "../components/PlayerCard/PlayerCard";
 import {
   fetchPlayerbyName,
   getPlayersBigmapLength,
-  getTokensBigmapLength,
-} from "../../api/playerMetadata";
-import { useAuthContext } from "../../context/auth/authContext";
-import PlayerCardSm from "../PlayerCardSm/PlayerCardSm";
+} from "../api/playerMetadata";
+import { useAuthContext } from "../context/auth/authContext";
+import PlayerCardSm from "../components/PlayerCardSm/PlayerCardSm";
 
-function MintToken() {
+function AddPlayer() {
   const [state, dispacth] = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [playerName, setPlayerName] = useState("");
-  const [address, setAddress] = useState("");
-  const [playerID, setPlayerID] = useState(null);
+  const [metadata, setMetadata] = useState("");
   const [data, setData] = useState();
   const [error, setError] = useState(null);
 
-  
-  const mintToken = async (e) => {
+  const addPlayer = async (e) => {
     e.preventDefault();
     setError(null);
     console.log("Transaction Initiated");
     try {
-      const token_id = await getTokensBigmapLength();
-      console.log(address, playerID, token_id);
+      const playerId = await getPlayersBigmapLength();
       const operation = await state.contract.methods
-        .mint(address, playerID, token_id)
+        .addPlayer(1, metadata, playerName, playerId)
         .send();
       await operation.confirmation();
       console.log("Transaction Completed");
@@ -41,9 +37,9 @@ function MintToken() {
     setPlayerName(e.target.value);
     const player = await fetchPlayerbyName(e.target.value);
     if (player.name) {
+      console.log(player);
       setData(player);
     }
-    console.log(player);
   };
 
   return (
@@ -64,28 +60,20 @@ function MintToken() {
             </Form.Text>
           </Form.Group>
           <Form.Group controlId="formBasicPassword">
-            <Form.Label>Player ID</Form.Label>
+            <Form.Label>Metdata String</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Player ID of Above Player"
-              onChange={(e) => setPlayerID(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group controlId="formBasicPassword">
-            <Form.Label>Address</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Reciever of Token"
-              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Metadata"
+              onChange={(e) => setMetadata(e.target.value)}
             />
           </Form.Group>
           <Button
             variant="primary"
             type="submit"
-            disabled={loading || !data || !playerID}
-            onClick={mintToken}
+            disabled={loading || !data || !metadata}
+            onClick={addPlayer}
           >
-            Mint
+            Add
           </Button>
         </Form>
         <div className="addplayer__card">
@@ -96,4 +84,4 @@ function MintToken() {
   );
 }
 
-export default MintToken;
+export default AddPlayer;

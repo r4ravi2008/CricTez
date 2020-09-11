@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { useAuthContext } from "./context/auth/authContext";
 import Navbar from "../src/components/Navbar/Navbar";
-import Routes from "./components/Routes";
+import Routes from "./Routes";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ThanosWallet } from "@thanos-wallet/dapp";
 import { contractAddress } from "./constants/contract";
