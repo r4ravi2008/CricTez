@@ -5,18 +5,18 @@ import {
   BrowserRouter as Router,
   Redirect,
 } from "react-router-dom";
-import BuyCards from "./Pages/BuyCards";
-import SellCards from "./Pages/SellCards";
-import OwnedCards from "./Pages/OwnedCards";
-import Play from "./Pages/Play";
-import Profile from "./Pages/Profile";
-import PlayerDetails from "./Pages/PlayerDetails";
-import CardDetails from "./Pages/CardDetails";
-import SellCardDetails from "./Pages/SellCardDetails.jsx";
-import AddPlayer from "./Pages/AddPlayer";
-import MintToken from "./Pages/MintToken";
-import Match from "./Pages/Match";
-import Search from "./Pages/Search";
+import BuyCards from "./pages/BuyCards";
+import SellCards from "./pages/SellCards";
+import OwnedCards from "./pages/OwnedCards";
+import Play from "./pages/Play";
+import Profile from "./pages/Profile";
+import PlayerDetails from "./pages/PlayerDetails";
+import CardDetails from "./pages/CardDetails";
+import SellCardDetails from "./pages/SellCardDetails.jsx";
+import AddPlayer from "./pages/AddPlayer";
+import MintToken from "./pages/MintToken";
+import Match from "./pages/Match";
+import Search from "./pages/Search";
 
 class Routes extends React.Component {
   render() {
