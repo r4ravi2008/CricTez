@@ -1,7 +1,7 @@
 import React from "react";
 import "./Sidebar.css";
 import { HiHome } from "react-icons/hi";
-import { FaExchangeAlt, FaRegAddressCard  } from "react-icons/fa";
+import { FaExchangeAlt, FaRegAddressCard } from "react-icons/fa";
 import { GiCricketBat } from "react-icons/gi";
 import { BsSearch } from "react-icons/bs";
 import { HiUserCircle } from "react-icons/hi";
@@ -13,7 +13,7 @@ function Sidebar() {
     <Nav className="col-md-1 sidebar">
       <div className="sidebar-sticky">
         <ul className="nav flex-column">
-          <LinkContainer to="/">
+          <LinkContainer to="/" exact={true}>
             <li className="nav-item">
               <HiHome className="fa-icons" />
             </li>

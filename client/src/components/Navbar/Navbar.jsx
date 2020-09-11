@@ -17,12 +17,12 @@ export default function MainNavbar(props) {
 
   return (
     <Navbar variant="dark" expand="lg" className="navbar">
-      {/* <Navbar.Brand className="navbar__header">Crypto Cricket</Navbar.Brand> */}
+      <Navbar.Brand className="navbar__header">CricTez</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <LinkContainer to="/">
-            <Nav.Link href="">MarketPlace</Nav.Link>
+          <LinkContainer to="/" exact={true}>
+            <Nav.Link>MarketPlace</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/sell">
             <Nav.Link href="">Sell Cards</Nav.Link>
