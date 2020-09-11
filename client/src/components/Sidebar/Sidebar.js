@@ -2,7 +2,7 @@ import React from "react";
 import "./Sidebar.css";
 import { HiHome } from "react-icons/hi";
 import { FaExchangeAlt, FaRegAddressCard } from "react-icons/fa";
-import { GiCricketBat } from "react-icons/gi";
+import { GiAmericanFootballHelmet } from "react-icons/gi";
 import { BsSearch } from "react-icons/bs";
 import { HiUserCircle } from "react-icons/hi";
 import { LinkContainer } from "react-router-bootstrap";
@@ -35,7 +35,7 @@ function Sidebar() {
           </LinkContainer>
           <LinkContainer to="/play">
             <li className="nav-item">
-              <GiCricketBat className="fa-icons" />
+              <GiAmericanFootballHelmet className="fa-icons" />
             </li>
           </LinkContainer>
           <LinkContainer to="/profile">

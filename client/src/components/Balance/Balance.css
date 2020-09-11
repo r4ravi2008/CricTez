@@ -1,0 +1,6 @@
+.balance-container {
+  color: var(--accent-color);
+}
+.balance-heading {
+    font-weight: 600;
+}

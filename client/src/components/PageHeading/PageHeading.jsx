@@ -24,7 +24,7 @@ function PageHeading({ text }) {
           {text.split(" ")[0]}
         </motion.h4>
       </div>
-      <div style={{ overflow: "hidden", height: "2rem" }}>
+      <div style={{ overflow: "hidden", height: "2.2rem" }}>
         <motion.h1
           className="page-subheading"
           initial="initial"

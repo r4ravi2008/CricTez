@@ -5,6 +5,7 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import "./Navbar.css";
 import { LinkContainer } from "react-router-bootstrap";
+import { FiLogOut } from "react-icons/fi";
 
 export default function MainNavbar(props) {
   const [state, dispatch] = useAuthContext();
@@ -43,12 +44,10 @@ export default function MainNavbar(props) {
             <Nav.Link href="">Matches</Nav.Link>
           </LinkContainer>
         </Nav>
-        <Nav>
-          <Nav.Link>{state.userAddress}</Nav.Link>
-          <LinkContainer to="/profile">
-            <Nav.Link>Profile</Nav.Link>
-          </LinkContainer>
-          <Nav.Link onClick={logout}>Logout</Nav.Link>
+        <Nav style={{ marginRight: 90 }}>
+          <li className="nav-item small-primary">
+            <FiLogOut className="fa-icons" />
+          </li>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

@@ -3,3 +3,4 @@ export const LOGOUT = "LOGOUT";
 
 export const SET_WALLET_ADDRESS = "SET_WALLET_ADDRESS";
 export const SET_CONTRACT = "SET_CONTRACT";
+export const SET_WALLET_BALANCE = "SET_WALLET_BALANCE";

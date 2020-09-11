@@ -4,6 +4,7 @@ import { fetchOwnedTokens } from "../api/playerMetadata";
 import PlayerCard from "../components/PlayerCard/PlayerCard";
 import { useAuthContext } from "../context/auth/authContext";
 import PageHeading from "../components/PageHeading/PageHeading";
+import Balance from "../components/Balance/Balance";
 
 function OwnedCards(props) {
   const [state, dispatch] = useAuthContext();
@@ -16,7 +17,7 @@ function OwnedCards(props) {
 
   return (
     <>
-      <PageHeading text={props.sellpage ? "Sell Cards" : "Owned Cards"} />
+      <Balance text={props.sellpage ? "Sell Cards" : "Owned Cards"} balance />
       <Container fluid style={{ textAlign: "center" }}>
         {!tokens.length ? (
           <h3>Loading...</h3>

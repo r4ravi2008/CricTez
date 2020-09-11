@@ -6,3 +6,9 @@
 .navbar__header {
   font-size: 2rem;
 }
+.nav-item.small-primary {
+  background-color: var(--primary-color);
+}
+.nav-item.small-primary .fa-icons {
+  font-size: 1rem;
+}

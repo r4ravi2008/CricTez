@@ -7,7 +7,11 @@ import Routes from "./Routes";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ThanosWallet } from "@thanos-wallet/dapp";
 import { contractAddress } from "./constants/contract";
-import { SET_CONTRACT, SET_WALLET_ADDRESS } from "./context/types";
+import {
+  SET_CONTRACT,
+  SET_WALLET_ADDRESS,
+  SET_WALLET_BALANCE,
+} from "./context/types";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { Row, Col } from "react-bootstrap";
 
@@ -19,14 +23,18 @@ function App() {
   // }
 
   const checkWalletConfigurable = async () => {
-    let wallet, tezos, dapp;
+    let wallet, tezos, dapp, accountBalance;
     try {
       await ThanosWallet.isAvailable();
       // return alert("Please Install Thanos Extension");
       wallet = new ThanosWallet("Crypto Cricket League");
       await wallet.connect("carthagenet");
       tezos = wallet.toTezos();
+      accountBalance = parseFloat(
+        (await tezos.tz.getBalance(wallet.pkh)) / 1000000
+      ).toFixed(2);
       dapp = await tezos.wallet.at(contractAddress);
+
       dispatch({
         type: SET_CONTRACT,
         payload: {
@@ -37,6 +45,12 @@ function App() {
         type: SET_WALLET_ADDRESS,
         payload: {
           userAddress: wallet.pkh,
+        },
+      });
+      dispatch({
+        type: SET_WALLET_BALANCE,
+        payload: {
+          balance: accountBalance,
         },
       });
     } catch (e) {

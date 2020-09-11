@@ -1,4 +1,10 @@
-const { LOGIN, LOGOUT, SET_CONTRACT, SET_WALLET_ADDRESS } = require("../types");
+const {
+  LOGIN,
+  LOGOUT,
+  SET_CONTRACT,
+  SET_WALLET_ADDRESS,
+  SET_WALLET_BALANCE,
+} = require("../types");
 
 export const initialState = {
   isAuthenticated: false,
@@ -6,6 +12,7 @@ export const initialState = {
   token: localStorage.getItem("token"),
   contract: null,
   userAddress: null,
+  balance: 0.0,
 };
 
 const reducer = (state, action) => {
@@ -19,6 +26,7 @@ const reducer = (state, action) => {
         user: action.payload.user,
         token: action.payload.token,
       };
+
     case LOGOUT:
       localStorage.clear();
       return {
@@ -26,16 +34,24 @@ const reducer = (state, action) => {
         isAuthenticated: false,
         user: null,
       };
+
     case SET_CONTRACT:
       return {
         ...state,
         contract: action.payload.contract,
       };
+
     case SET_WALLET_ADDRESS:
       return {
         ...state,
         userAddress: action.payload.userAddress,
       };
+    case SET_WALLET_BALANCE:
+      return {
+        ...state,
+        balance: action.payload.balance,
+      };
+
     default:
       return state;
   }
