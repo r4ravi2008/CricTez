@@ -1,0 +1,10 @@
+.selected-button {
+  background-color: var(--primary-color-dark);
+}
+.select-card-upper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 0;
+}

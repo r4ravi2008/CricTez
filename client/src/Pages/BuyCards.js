@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import PlayerCard from "../components/PlayerCard/PlayerCard";
 import Container from "react-bootstrap/Container";
 import { fetchTokensOnSale } from "../api/playerMetadata";
+import PageHeading from "../components/PageHeading/PageHeading";
 
 function BuyCards() {
   const [tokens, setTokens] = useState([]);
@@ -12,15 +13,19 @@ function BuyCards() {
   }, []);
 
   return (
-    <Container fluid={true} style={{ textAlign: "center" }}>
-      {!tokens.length ? (
-        <h3>Loading...</h3>
-      ) : (
-        tokens.map((token, index) => (
-          <PlayerCard key={index} data={token} owned={false} />
-        ))
-      )}
-    </Container>
+    <>
+      <PageHeading text="Buy Cards" />
+
+      <Container fluid={true} style={{ textAlign: "center" }}>
+        {!tokens.length ? (
+          <h3>Loading...</h3>
+        ) : (
+          tokens.map((token, index) => (
+            <PlayerCard key={index} data={token} owned={false} />
+          ))
+        )}
+      </Container>
+    </>
   );
 }
 

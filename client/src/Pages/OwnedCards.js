@@ -3,6 +3,7 @@ import { Container, Button } from "react-bootstrap";
 import { fetchOwnedTokens } from "../api/playerMetadata";
 import PlayerCard from "../components/PlayerCard/PlayerCard";
 import { useAuthContext } from "../context/auth/authContext";
+import PageHeading from "../components/PageHeading/PageHeading";
 
 function OwnedCards() {
   const [state, dispatch] = useAuthContext();
@@ -14,15 +15,18 @@ function OwnedCards() {
   }, [state]);
 
   return (
-    <Container fluid style={{ textAlign: "center" }}>
-      {!tokens.length ? (
-        <h3>Loading...</h3>
-      ) : (
-        tokens.map((token, index) => (
-          <PlayerCard key={index} data={{ key: token }} owned={true} />
-        ))
-      )}
-    </Container>
+    <>
+      <PageHeading text="Owned Cards" />
+      <Container fluid style={{ textAlign: "center" }}>
+        {!tokens.length ? (
+          <h3>Loading...</h3>
+        ) : (
+          tokens.map((token, index) => (
+            <PlayerCard key={index} data={{ key: token }} owned={true} />
+          ))
+        )}
+      </Container>
+    </>
   );
 }
 

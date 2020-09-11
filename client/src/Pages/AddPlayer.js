@@ -7,6 +7,7 @@ import {
 } from "../api/playerMetadata";
 import { useAuthContext } from "../context/auth/authContext";
 import PlayerCardSm from "../components/PlayerCardSm/PlayerCardSm";
+import PageHeading from "../components/PageHeading/PageHeading";
 
 function AddPlayer() {
   const [state, dispacth] = useAuthContext();
@@ -43,44 +44,48 @@ function AddPlayer() {
   };
 
   return (
-    <Container>
-      {error}
-      <div className="addplayer__container">
-        <Form className="from__addplayer">
-          <Form.Group controlId="formBasicEmail">
-            <Form.Label>Player Name</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Name"
-              onChange={keyPressed}
-              value={playerName}
-            />
-            <Form.Text className="text-muted">
-              Make sure the player is in the database.
-            </Form.Text>
-          </Form.Group>
-          <Form.Group controlId="formBasicPassword">
-            <Form.Label>Metdata String</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Metadata"
-              onChange={(e) => setMetadata(e.target.value)}
-            />
-          </Form.Group>
-          <Button
-            variant="primary"
-            type="submit"
-            disabled={loading || !data || !metadata}
-            onClick={addPlayer}
-          >
-            Add
-          </Button>
-        </Form>
-        <div className="addplayer__card">
-          {data ? <PlayerCardSm data={data} /> : ""}
+    <>
+      <PageHeading text="Add Players" />
+
+      <Container>
+        {error}
+        <div className="addplayer__container">
+          <Form className="from__addplayer">
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Player Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Name"
+                onChange={keyPressed}
+                value={playerName}
+              />
+              <Form.Text className="text-muted">
+                Make sure the player is in the database.
+              </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Metdata String</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Metadata"
+                onChange={(e) => setMetadata(e.target.value)}
+              />
+            </Form.Group>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={loading || !data || !metadata}
+              onClick={addPlayer}
+            >
+              Add
+            </Button>
+          </Form>
+          <div className="addplayer__card">
+            {data ? <PlayerCardSm data={data} /> : ""}
+          </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </>
   );
 }
 

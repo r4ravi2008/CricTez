@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom";
 import { teamColors } from "../../constants/teamColors";
 import { motion, AnimatePresence } from "framer-motion";
 import { LinkContainer } from "react-router-bootstrap";
+import Form from "react-bootstrap/Form";
 
 export default function PlayerCard(props) {
   const { data } = props;
@@ -59,7 +60,13 @@ export default function PlayerCard(props) {
       initial="hidden"
       animate="visible"
     >
-      <Card className="player-card" onClick={navigate}>
+      <Card
+        className="player-card"
+        onClick={props.select ? null : navigate}
+        style={
+          props.select && !tokenDetails.sale.price ? { display: "none" } : {}
+        }
+      >
         <Card.Body>
           <div className="wrapper-dark">
             <div className="card-upper">
@@ -115,7 +122,7 @@ export default function PlayerCard(props) {
             <div className="player-lastname">
               {tokenDetails.name.split(" ")[1]}
             </div>
-            <div className="player-role">{tokenDetails.image_url.role}</div>
+            <div className="player-role">{tokenDetails.role}</div>
           </div>
           <div className="team-logo">
             <img src={require("../../assests/rcb-logo.png")} alt="" />

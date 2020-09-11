@@ -1,7 +1,12 @@
 import React from "react";
+import PageHeading from "../components/PageHeading/PageHeading";
 
 function Profile() {
-  return <div>Profile</div>;
+  return (
+    <div>
+      <PageHeading text="Your Profile" />
+    </div>
+  );
 }
 
 export default Profile;

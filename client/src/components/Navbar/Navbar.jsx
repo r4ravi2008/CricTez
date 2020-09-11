@@ -25,13 +25,13 @@ export default function MainNavbar(props) {
             <Nav.Link href="">MarketPlace</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/sell">
-            <Nav.Link href="">Sell</Nav.Link>
+            <Nav.Link href="">Sell Cards</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/owned">
             <Nav.Link href="">Owned Cards</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/play">
-            <Nav.Link href="">Play</Nav.Link>
+            <Nav.Link href="">Compete</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/addplayer">
             <Nav.Link href="">Add Player</Nav.Link>
