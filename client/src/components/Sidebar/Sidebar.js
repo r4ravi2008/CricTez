@@ -15,7 +15,7 @@ function Sidebar() {
         <ul className="nav flex-column">
           <LinkContainer to="/" exact={true}>
             <li className="nav-item">
-              <HiHome className="fa-icons" />
+              <HiHome className="fa-icons active-icon" />
             </li>
           </LinkContainer>
           <LinkContainer to="/sell">

@@ -84,6 +84,7 @@
 }
 .player-image img {
   height: 200px;
+  filter: drop-shadow(-3px 0 10px rgba(0, 0, 0, 1));
 }
 .tez-logo {
   width: 30px;

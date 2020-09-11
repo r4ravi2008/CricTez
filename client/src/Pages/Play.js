@@ -57,13 +57,12 @@ function Play() {
   };
 
   return (
-    <Container fluid style={{ textAlign: "center" }}>
-      <br />
+    <>
       <Row>
         <Col style={{ textAlign: "left" }}>
           <PageHeading text={page ? "Confirm Players" : "Choose Players"} />
         </Col>
-        <Col md={5}>
+        <Col md={page ? 5 : 3}>
           <br />
           <br />
           {page ? (
@@ -86,11 +85,15 @@ function Play() {
           </Button>
         </Col>
       </Row>
-      <br />
-      {!page && showCards()}
-      {page && confirmCards()}
-      <br />
-    </Container>
+      <Container fluid style={{ textAlign: "center" }}>
+        <br />
+
+        <br />
+        {!page && showCards()}
+        {page && confirmCards()}
+        <br />
+      </Container>
+    </>
   );
 }
 

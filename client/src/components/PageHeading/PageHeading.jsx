@@ -8,9 +8,9 @@ function PageHeading({ text }) {
       <br />
       <h4 className="page-heading">{text.split(" ")[0]}</h4>
       <h1 className="page-subheading">{text.split(" ")[1]}</h1>
-      <br />
+      <br/>
       <hr />
-      <br />
+      <br/>
     </div>
   );
 }

@@ -17,7 +17,7 @@ export default function MainNavbar(props) {
 
   return (
     <Navbar variant="dark" expand="lg" className="navbar">
-      <Navbar.Brand className="navbar__header">CricTez</Navbar.Brand>
+      <Navbar.Brand className="navbar__header"></Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">

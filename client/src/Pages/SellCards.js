@@ -2,7 +2,7 @@ import React from "react";
 import OwnedCards from "./OwnedCards";
 
 function SellCards() {
-  return <OwnedCards />;
+  return <OwnedCards sellpage={true} />;
 }
 
 export default SellCards;

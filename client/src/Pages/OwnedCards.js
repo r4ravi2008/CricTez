@@ -5,7 +5,7 @@ import PlayerCard from "../components/PlayerCard/PlayerCard";
 import { useAuthContext } from "../context/auth/authContext";
 import PageHeading from "../components/PageHeading/PageHeading";
 
-function OwnedCards() {
+function OwnedCards(props) {
   const [state, dispatch] = useAuthContext();
   const [tokens, setTokens] = useState([]);
 
@@ -16,7 +16,7 @@ function OwnedCards() {
 
   return (
     <>
-      <PageHeading text="Owned Cards" />
+      <PageHeading text={props.sellpage ? "Sell Cards" : "Owned Cards"} />
       <Container fluid style={{ textAlign: "center" }}>
         {!tokens.length ? (
           <h3>Loading...</h3>
