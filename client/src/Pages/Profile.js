@@ -3,9 +3,21 @@ import PageHeading from "../components/PageHeading/PageHeading";
 import { useAuthContext } from "../context/auth/authContext";
 import { Container } from "react-bootstrap";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
+import { SET_NAVBAR_HEADING } from "../context/types";
+import { useEffect } from "react";
 
 function Profile() {
   const [state, dispatch] = useAuthContext();
+
+  useEffect(() => {
+    dispatch({
+      type: SET_NAVBAR_HEADING,
+      payload: {
+        heading: "Profile",
+      },
+    });
+  }, []);
+
   return (
     <RouteTransition>
       <PageHeading text="Your Profile" />

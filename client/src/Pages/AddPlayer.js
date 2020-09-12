@@ -9,14 +9,25 @@ import { useAuthContext } from "../context/auth/authContext";
 import PlayerCardSm from "../components/PlayerCardSm/PlayerCardSm";
 import PageHeading from "../components/PageHeading/PageHeading";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
+import { useEffect } from "react";
+import { SET_NAVBAR_HEADING } from "../context/types";
 
 function AddPlayer() {
-  const [state, dispacth] = useAuthContext();
+  const [state, dispatch] = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [metadata, setMetadata] = useState("");
   const [data, setData] = useState();
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    dispatch({
+      type: SET_NAVBAR_HEADING,
+      payload: {
+        heading: "Add Player",
+      },
+    });
+  }, []);
 
   const addPlayer = async (e) => {
     e.preventDefault();

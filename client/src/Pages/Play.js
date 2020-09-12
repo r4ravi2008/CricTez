@@ -6,6 +6,7 @@ import PlayerCard from "../components/PlayerCard/PlayerCard";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
 import SelectCard from "../components/SelectCard/SelectCard";
 import { useAuthContext } from "../context/auth/authContext";
+import { SET_NAVBAR_HEADING } from "../context/types";
 
 function Play() {
   const [state, dispatch] = useAuthContext();
@@ -17,6 +18,15 @@ function Play() {
     if (state.userAddress)
       fetchOwnedTokens(state.userAddress).then((res) => setTokens(res));
   }, [state]);
+
+  useEffect(() => {
+    dispatch({
+      type: SET_NAVBAR_HEADING,
+      payload: {
+        heading: "Compete",
+      },
+    });
+  }, []);
 
   const showCards = () => {
     return !tokens.length ? (

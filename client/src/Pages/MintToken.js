@@ -10,15 +10,26 @@ import { useAuthContext } from "../context/auth/authContext";
 import PlayerCardSm from "../components/PlayerCardSm/PlayerCardSm";
 import PageHeading from "../components/PageHeading/PageHeading";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
+import { SET_NAVBAR_HEADING } from "../context/types";
+import { useEffect } from "react";
 
 function MintToken() {
-  const [state, dispacth] = useAuthContext();
+  const [state, dispatch] = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [address, setAddress] = useState("");
   const [playerID, setPlayerID] = useState(null);
   const [data, setData] = useState();
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    dispatch({
+      type: SET_NAVBAR_HEADING,
+      payload: {
+        heading: "Mint Token",
+      },
+    });
+  }, []);
 
   const mintToken = async (e) => {
     e.preventDefault();

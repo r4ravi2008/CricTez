@@ -5,14 +5,24 @@ import { fetchTokensOnSale } from "../api/playerMetadata";
 import { useAuthContext } from "../context/auth/authContext";
 import Balance from "../components/Balance/Balance";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
-import "./styles.css"
+import "./styles.css";
+import { SET_NAVBAR_HEADING } from "../context/types";
 
 function BuyCards() {
   const [tokens, setTokens] = useState([]);
-  const [] = useAuthContext();
+  const [state, dispatch] = useAuthContext();
   useEffect(() => {
     fetchTokensOnSale().then((res) => setTokens(res));
     window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    dispatch({
+      type: SET_NAVBAR_HEADING,
+      payload: {
+        heading: "Buy Cards",
+      },
+    });
   }, []);
 
   return (

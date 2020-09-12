@@ -2,11 +2,21 @@
   background-color: var(--background-color-dark);
   height: 90px; /* Same as sidebar width*/
   z-index: 2;
+  padding: 0 1rem 0 1rem;
 }
 .navbar__header {
-  font-size: 2rem;
+  font-size: 2.5rem;
+  font-weight: 400;
+  margin-left: 2rem;
+}
+.navbar__header > span {
+  color: var(--primary-color);
+  font-weight: 600;
 }
 .nav-item.small-primary {
+  background-color: var(--background-color-light);
+}
+.nav-item.small-primary:hover {
   background-color: var(--primary-color);
 }
 .nav-item.small-primary .fa-icons {

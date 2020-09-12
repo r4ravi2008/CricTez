@@ -4,9 +4,11 @@ const {
   SET_CONTRACT,
   SET_WALLET_ADDRESS,
   SET_WALLET_BALANCE,
+  SET_NAVBAR_HEADING,
 } = require("../types");
 
 export const initialState = {
+  heading: "Buy Cards",
   isAuthenticated: false,
   user: localStorage.getItem("user"),
   token: localStorage.getItem("token"),
@@ -50,6 +52,11 @@ const reducer = (state, action) => {
       return {
         ...state,
         balance: action.payload.balance,
+      };
+    case SET_NAVBAR_HEADING:
+      return {
+        ...state,
+        heading: action.payload.heading,
       };
 
     default:
