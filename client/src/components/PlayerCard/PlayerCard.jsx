@@ -25,32 +25,31 @@ export default function PlayerCard(props) {
   const variants = {
     visible: { opacity: 1, transition: { duration: 0.75 } },
     hidden: { opacity: 0 },
+    exit: { scale: 0.5, transition: { duration: 0.75 } },
   };
 
   const SkeletonCard = () => (
-    <AnimatePresence>
-      <motion.div
-        className="card-container"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0, transition: { duration: 0.75, type: "tween" } }}
-      >
-        <Card className="player-card">
-          <Card.Body>
-            <div className="wrapper-dark">
-              <div className="card-upper">
-                <div className="card-price-heading">Price</div>
-                <div className="card-price-section">
-                  <div className="price-value loader">Loading...</div>
-                </div>
-                <div className="card-usd-heading">$ 0.00</div>
+    <motion.div
+      className="card-container"
+      initial="hidden"
+      animate="visible"
+      variants={variants}
+    >
+      <Card className="player-card">
+        <Card.Body>
+          <div className="wrapper-dark">
+            <div className="card-upper">
+              <div className="card-price-heading">Price</div>
+              <div className="card-price-section">
+                <div className="price-value loader">Loading...</div>
               </div>
+              <div className="card-usd-heading">$ 0.00</div>
             </div>
-          </Card.Body>
-          <div className="player-image"></div>
-        </Card>
-      </motion.div>
-    </AnimatePresence>
+          </div>
+        </Card.Body>
+        <div className="player-image"></div>
+      </Card>
+    </motion.div>
   );
 
   return tokenDetails ? (
@@ -59,7 +58,6 @@ export default function PlayerCard(props) {
       variants={variants}
       initial="hidden"
       animate="visible"
-      exit="exit"
     >
       <Card
         className="player-card"

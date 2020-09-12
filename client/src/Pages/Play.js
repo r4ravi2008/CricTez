@@ -86,9 +86,6 @@ function Play() {
         </Col>
       </Row>
       <Container fluid style={{ textAlign: "center" }}>
-        <br />
-
-        <br />
         {!page && showCards()}
         {page && confirmCards()}
         <br />

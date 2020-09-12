@@ -17,6 +17,7 @@ import AddPlayer from "./pages/AddPlayer";
 import MintToken from "./pages/MintToken";
 import Match from "./pages/Match";
 import Search from "./pages/Search";
+import { AnimatePresence } from "framer-motion";
 
 class Routes extends React.Component {
   render() {

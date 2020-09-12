@@ -31,14 +31,16 @@
 .playerdetails__name {
   height: 30%;
 }
-.playerdetails__name > h3 {
-  margin: 0;
-  margin-bottom: 0.1rem;
+.playerdetails-firstname {
   font-weight: 400;
+  height: 2rem;
+  margin: 0;
 }
-.playerdetails__name > h1 {
+.playerdetails-lastname{
   font-size: 3rem;
   font-weight: 700;
+  height: 3.2rem;
+  margin: 0;
 }
 .playerdetails__role > h4 {
   font-weight: 700;

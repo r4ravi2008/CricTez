@@ -14,6 +14,7 @@ import {
 } from "./context/types";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { Row, Col } from "react-bootstrap";
+import { AnimatePresence } from "framer-motion";
 
 function App() {
   const [state, dispatch] = useAuthContext();
@@ -64,15 +65,17 @@ function App() {
 
   return (
     <div className="App">
-      <Router>
-        <Navbar />
-        <Row className="fluid">
-          <Sidebar />
-          <div className="wrapper-light">
-            <Routes />
-          </div>
-        </Row>
-      </Router>
+      <AnimatePresence initial={false} exitBeforeEnter={true}>
+        <Router>
+          <Navbar />
+          <Row className="fluid">
+            <Sidebar />
+            <div className="wrapper-light">
+              <Routes />
+            </div>
+          </Row>
+        </Router>
+      </AnimatePresence>
     </div>
   );
 }
