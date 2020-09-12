@@ -13,12 +13,11 @@ import Play from "./pages/Play";
 import Profile from "./pages/Profile";
 import PlayerDetails from "./pages/PlayerDetails";
 import CardDetails from "./pages/CardDetails";
-import SellCardDetails from "./pages/SellCardDetails.jsx";
 import AddPlayer from "./pages/AddPlayer";
 import MintToken from "./pages/MintToken";
 import Match from "./pages/Match";
 import Search from "./pages/Search";
-import { AnimatePresence } from "framer-motion";
+
 
 const Routes = () => {
   let location = useLocation();
@@ -30,9 +29,6 @@ const Routes = () => {
       </Route>
       <Route path="/sell" exact>
         <SellCards />
-      </Route>
-      <Route path="/sell/token" exact>
-        <SellCardDetails />
       </Route>
       <Route path="/owned">
         <OwnedCards />

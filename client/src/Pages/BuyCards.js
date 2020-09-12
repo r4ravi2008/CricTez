@@ -5,6 +5,7 @@ import { fetchTokensOnSale } from "../api/playerMetadata";
 import { useAuthContext } from "../context/auth/authContext";
 import Balance from "../components/Balance/Balance";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
+import "./styles.css"
 
 function BuyCards() {
   const [tokens, setTokens] = useState([]);

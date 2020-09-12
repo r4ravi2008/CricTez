@@ -12,10 +12,7 @@ import Form from "react-bootstrap/Form";
 export default function PlayerCard(props) {
   const { data } = props;
   const [tokenDetails, setTokenDetails] = useState();
-  const [show, setShow] = useState(true);
-  setTimeout(() => {
-    setShow(false);
-  }, 4000);
+
   const histroy = useHistory();
 
   useEffect(() => {
@@ -23,7 +20,12 @@ export default function PlayerCard(props) {
   }, [data.key]);
 
   const navigate = () => {
-    histroy.push(`/card/${tokenDetails.token_id}`, tokenDetails);
+    histroy.push(
+      `/card/${tokenDetails.token_id}`,
+      tokenDetails.sale.price
+        ? { ...tokenDetails, owned: false }
+        : { ...tokenDetails, owned: true }
+    );
   };
 
   const variants = {
@@ -83,6 +85,7 @@ export default function PlayerCard(props) {
                       backgroundColor: teamColors[tokenDetails.team],
                       zIndex: 2,
                     }}
+                    onClick={() => console.log(tokenDetails.token_id)}
                   >
                     Sell
                   </a>

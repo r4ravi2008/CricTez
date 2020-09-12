@@ -32,6 +32,11 @@
   border-radius: 1rem;
   color: white;
 }
+.form-group.light > input,
+.form-group.light > input:focus {
+  background-color: var(--background-color-light);
+  width: 5rem;
+}
 .form-group .form-label {
   color: var(--accent-color);
 }
