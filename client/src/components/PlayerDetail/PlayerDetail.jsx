@@ -40,7 +40,7 @@ function PlayerDetail(props) {
     >
       <Row
         className="playerdetails__hero"
-        style={{ backgroundColor: teamColors[data.team] }}
+        style={data.team ? { backgroundColor: teamColors[data?.team] } : {}}
       >
         {props.showImage ? (
           <Col md={3} className="playerdetails__image">

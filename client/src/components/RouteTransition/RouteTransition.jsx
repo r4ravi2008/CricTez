@@ -6,7 +6,7 @@ function RouteTransition(props) {
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, x: 0, y: 0 }}
-      exit={{ opacity: 0, y: 30 }}
+      transition={{ duration: 0.5, type: "tween" }}
     >
       {props.children}
     </motion.div>
