@@ -3,6 +3,7 @@ import { Container, Button, Col, Row } from "react-bootstrap";
 import { fetchOwnedTokens } from "../api/playerMetadata";
 import PageHeading from "../components/PageHeading/PageHeading";
 import PlayerCard from "../components/PlayerCard/PlayerCard";
+import RouteTransition from "../components/RouteTransition/RouteTransition";
 import SelectCard from "../components/SelectCard/SelectCard";
 import { useAuthContext } from "../context/auth/authContext";
 
@@ -21,31 +22,37 @@ function Play() {
     return !tokens.length ? (
       <h3>Loading...</h3>
     ) : (
-      tokens.map((token, index) => (
-        <SelectCard
-          key={index}
-          data={{ key: token }}
-          owned={true}
-          select={true}
-          selectedTokens={selectedTokens}
-          setselectedTokens={setselectedTokens}
-          selectable={true}
-        />
-      ))
+      <RouteTransition>
+        {tokens.map((token, index) => (
+          <SelectCard
+            key={index}
+            data={{ key: token }}
+            owned={true}
+            select={true}
+            selectedTokens={selectedTokens}
+            setselectedTokens={setselectedTokens}
+            selectable={true}
+          />
+        ))}
+      </RouteTransition>
     );
   };
 
   const confirmCards = () => {
-    return selectedTokens.map((token, index) => (
-      <SelectCard
-        key={index}
-        data={{ key: token.token_id }}
-        owned={true}
-        selectedTokens={selectedTokens}
-        setselectedTokens={setselectedTokens}
-        selectable={false}
-      />
-    ));
+    return (
+      <RouteTransition>
+        {selectedTokens.map((token, index) => (
+          <SelectCard
+            key={index}
+            data={{ key: token.token_id }}
+            owned={true}
+            selectedTokens={selectedTokens}
+            setselectedTokens={setselectedTokens}
+            selectable={false}
+          />
+        ))}
+      </RouteTransition>
+    );
   };
 
   const handleClick = () => {
@@ -85,6 +92,7 @@ function Play() {
           </Button>
         </Col>
       </Row>
+
       <Container fluid style={{ textAlign: "center" }}>
         {!page && showCards()}
         {page && confirmCards()}

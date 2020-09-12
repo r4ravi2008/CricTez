@@ -4,7 +4,9 @@ import "./App.css";
 import { useAuthContext } from "./context/auth/authContext";
 import Navbar from "../src/components/Navbar/Navbar";
 import Routes from "./Routes";
-import { BrowserRouter as Router } from "react-router-dom";
+import {
+  useLocation,
+} from "react-router-dom";
 import { ThanosWallet } from "@thanos-wallet/dapp";
 import { contractAddress } from "./constants/contract";
 import {
@@ -13,11 +15,10 @@ import {
   SET_WALLET_BALANCE,
 } from "./context/types";
 import Sidebar from "./components/Sidebar/Sidebar";
-import { Row, Col } from "react-bootstrap";
-import { AnimatePresence } from "framer-motion";
+import { Row } from "react-bootstrap";
 
 function App() {
-  const [state, dispatch] = useAuthContext();
+  const [, dispatch] = useAuthContext();
 
   // if (!state.isAuthenticated) {
   //   return <Login />;
@@ -65,17 +66,13 @@ function App() {
 
   return (
     <div className="App">
-      <AnimatePresence initial={false} exitBeforeEnter={true}>
-        <Router>
-          <Navbar />
-          <Row className="fluid">
-            <Sidebar />
-            <div className="wrapper-light">
-              <Routes />
-            </div>
-          </Row>
-        </Router>
-      </AnimatePresence>
+      <Navbar />
+      <Row className="fluid">
+        <Sidebar />
+        <div className="wrapper-light">
+          <Routes />
+        </div>
+      </Row>
     </div>
   );
 }

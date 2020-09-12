@@ -5,6 +5,8 @@ import PlayerCard from "../components/PlayerCard/PlayerCard";
 import { useAuthContext } from "../context/auth/authContext";
 import PageHeading from "../components/PageHeading/PageHeading";
 import Balance from "../components/Balance/Balance";
+import { motion } from "framer-motion";
+import RouteTransition from "../components/RouteTransition/RouteTransition";
 
 function OwnedCards(props) {
   const [state, dispatch] = useAuthContext();
@@ -22,9 +24,11 @@ function OwnedCards(props) {
         {!tokens.length ? (
           <h3>Loading...</h3>
         ) : (
-          tokens.map((token, index) => (
-            <PlayerCard key={index} data={{ key: token }} owned={true} />
-          ))
+          <RouteTransition>
+            {tokens.map((token, index) => (
+              <PlayerCard key={index} data={{ key: token }} owned={true} />
+            ))}
+          </RouteTransition>
         )}
       </Container>
     </>

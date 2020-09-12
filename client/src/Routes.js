@@ -4,6 +4,7 @@ import {
   Switch,
   BrowserRouter as Router,
   Redirect,
+  useLocation,
 } from "react-router-dom";
 import BuyCards from "./pages/BuyCards";
 import SellCards from "./pages/SellCards";
@@ -19,10 +20,12 @@ import Match from "./pages/Match";
 import Search from "./pages/Search";
 import { AnimatePresence } from "framer-motion";
 
-class Routes extends React.Component {
-  render() {
-    return (
-      <Switch>
+const Routes = () => {
+  let location = useLocation();
+
+  return (
+    <AnimatePresence exitBeforeEnter initial={true}>
+      <Switch location={location} key={location.key}>
         <Route path="/" exact>
           <BuyCards />
         </Route>
@@ -47,7 +50,7 @@ class Routes extends React.Component {
         <Route path="/player/:id">
           <PlayerDetails />
         </Route>
-        <Route path="/card/:id">
+        <Route path="/card/:id" exact>
           <CardDetails />
         </Route>
         <Route path="/addplayer" exact>
@@ -61,8 +64,8 @@ class Routes extends React.Component {
         </Route>
         <Redirect to="/" />
       </Switch>
-    );
-  }
-}
+    </AnimatePresence>
+  );
+};
 
 export default Routes;

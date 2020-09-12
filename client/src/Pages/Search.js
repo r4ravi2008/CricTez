@@ -1,11 +1,12 @@
 import React from "react";
 import PageHeading from "../components/PageHeading/PageHeading";
+import RouteTransition from "../components/RouteTransition/RouteTransition";
 
 function Search() {
   return (
-    <div>
+    <RouteTransition>
       <PageHeading text="Search Players/Cards" />
-    </div>
+    </RouteTransition>
   );
 }
 

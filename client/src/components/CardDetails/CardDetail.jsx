@@ -33,7 +33,6 @@ function CardDetails(props) {
     }
   };
 
-  console.log(card);
   return (
     <React.Fragment>
       <div className="card-detail-container">

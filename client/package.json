@@ -11,7 +11,7 @@
     "axios": "^0.19.2",
     "bootstrap": "^4.5.2",
     "cricapi": "^1.2.9",
-    "framer-motion": "^2.6.10",
+    "framer-motion": "^1.10.3",
     "react": "^16.13.1",
     "react-bootstrap": "^1.3.0",
     "react-dom": "^16.13.1",

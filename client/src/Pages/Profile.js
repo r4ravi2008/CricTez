@@ -2,11 +2,12 @@ import React from "react";
 import PageHeading from "../components/PageHeading/PageHeading";
 import { useAuthContext } from "../context/auth/authContext";
 import { Container } from "react-bootstrap";
+import RouteTransition from "../components/RouteTransition/RouteTransition";
 
 function Profile() {
   const [state, dispatch] = useAuthContext();
   return (
-    <div>
+    <RouteTransition>
       <PageHeading text="Your Profile" />
       <Container fluid>
         <div className="profile-container">
@@ -25,7 +26,7 @@ function Profile() {
           <h1 className="profile-address">20</h1>
         </div>
       </Container>
-    </div>
+    </RouteTransition>
   );
 }
 

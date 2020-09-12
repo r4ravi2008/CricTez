@@ -5,6 +5,7 @@ import PlayerDetail from "../components/PlayerDetail/PlayerDetail";
 import { Container, Form, Button } from "react-bootstrap";
 import "./styles.css";
 import { useAuthContext } from "../context/auth/authContext";
+import RouteTransition from "../components/RouteTransition/RouteTransition";
 
 function SellCardDetails(props) {
   const [state, dispatch] = useAuthContext();
@@ -32,7 +33,7 @@ function SellCardDetails(props) {
   };
 
   return (
-    <div>
+    <RouteTransition>
       <Container style={{ textAlign: "center" }}>
         {error}
         <Form className="card__sellform">
@@ -64,7 +65,7 @@ function SellCardDetails(props) {
         {tCompleted ? "Token Listed on MarketPlace Successfully" : ""}
       </Container>
       <PlayerDetail data={data} />
-    </div>
+    </RouteTransition>
   );
 }
 

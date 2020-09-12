@@ -12,6 +12,10 @@ import Form from "react-bootstrap/Form";
 export default function PlayerCard(props) {
   const { data } = props;
   const [tokenDetails, setTokenDetails] = useState();
+  const [show, setShow] = useState(true);
+  setTimeout(() => {
+    setShow(false);
+  }, 4000);
   const histroy = useHistory();
 
   useEffect(() => {
@@ -25,7 +29,7 @@ export default function PlayerCard(props) {
   const variants = {
     visible: { opacity: 1, transition: { duration: 0.75 } },
     hidden: { opacity: 0 },
-    exit: { scale: 0.5, transition: { duration: 0.75 } },
+    exit: { opacity: 0, transition: { duration: 0.75 } },
   };
 
   const SkeletonCard = () => (
@@ -110,7 +114,8 @@ export default function PlayerCard(props) {
         <div className="player-image">
           <img className="playerimage" src={tokenDetails.image_url} alt="img" />
         </div>
-        <div
+
+        <motion.div
           className="card-lower"
           style={{ backgroundColor: teamColors[tokenDetails.team] }}
         >
@@ -132,7 +137,7 @@ export default function PlayerCard(props) {
               {parseFloat(tokenDetails.card_score).toFixed(2)}
             </div>
           </div>
-        </div>
+        </motion.div>
       </Card>
     </motion.div>
   ) : (

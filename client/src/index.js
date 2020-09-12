@@ -5,11 +5,14 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { AuthContextWrapper } from "./context/auth/authContext";
 import reducer, { initialState } from "./context/auth/authReducer";
+import { BrowserRouter as Router } from "react-router-dom";
 
 ReactDOM.render(
   <React.StrictMode>
     <AuthContextWrapper initialState={initialState} reducer={reducer}>
-      <App />
+      <Router>
+        <App />
+      </Router>
     </AuthContextWrapper>
   </React.StrictMode>,
   document.getElementById("root")

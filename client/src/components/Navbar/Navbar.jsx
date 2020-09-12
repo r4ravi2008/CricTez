@@ -22,7 +22,7 @@ export default function MainNavbar(props) {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <LinkContainer to="/" exact={true}>
+          <LinkContainer to="/">
             <Nav.Link>MarketPlace</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/sell">
