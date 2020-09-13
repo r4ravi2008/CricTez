@@ -53,7 +53,7 @@ function CardDetails(props) {
   return (
     <React.Fragment>
       <div className="card-detail-container">
-        <div className="error">{error}</div>
+        <div className="error"></div>
         {card ? (
           <>
             <br />

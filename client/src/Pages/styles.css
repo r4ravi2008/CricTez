@@ -82,3 +82,7 @@
   margin: 0 4rem;
   color: var(--accent-color);
 }
+.search-bar {
+  padding: 2rem 2rem;
+  border-radius: 100px !important;
+}

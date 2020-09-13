@@ -32,7 +32,7 @@ function OwnedCards(props) {
       <Balance text={props.sellpage ? "Sell Cards" : "Owned Cards"} balance />
       <Container fluid style={{ textAlign: "center" }}>
         {!tokens.length ? (
-          <h3>Loading...</h3>
+          <h3>Warming Up...</h3>
         ) : (
           <RouteTransition>
             {tokens.map((token, index) => (

@@ -30,7 +30,7 @@ function Play() {
 
   const showCards = () => {
     return !tokens.length ? (
-      <h3>Loading...</h3>
+      <h3>Warming Up...</h3>
     ) : (
       <RouteTransition>
         {tokens.map((token, index) => (

@@ -31,7 +31,7 @@ function BuyCards() {
 
       <Container fluid={true} style={{ textAlign: "center" }}>
         {!tokens.length ? (
-          <h3>Loading...</h3>
+          <h3>Warming Up...</h3>
         ) : (
           <RouteTransition>
             {tokens.map((token, index) => (
