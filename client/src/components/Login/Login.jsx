@@ -4,14 +4,17 @@ import { useAuthContext } from "../../context/auth/authContext";
 import { LOGIN } from "../../context/types";
 import { oauthClientid } from "../../constants/google-oauth-clientid";
 import "./Login.css";
+import { login } from "../../api/auth";
 
 function Login() {
-  const responseGoogle = (res) => {
+  const responseGoogle = async (res) => {
+    console.log(res);
+    const data = await login(res);
     dispatch({
       type: LOGIN,
       payload: {
-        token: res.accessToken,
-        user: res.profileObj.name,
+        token: data.token,
+        user: data.user,
       },
     });
   };

@@ -4,9 +4,7 @@ import "./App.css";
 import { useAuthContext } from "./context/auth/authContext";
 import Navbar from "../src/components/Navbar/Navbar";
 import Routes from "./Routes";
-import {
-  useLocation,
-} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { ThanosWallet } from "@thanos-wallet/dapp";
 import { contractAddress } from "./constants/contract";
 import {
@@ -16,13 +14,14 @@ import {
 } from "./context/types";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { Row } from "react-bootstrap";
+import Login from "./components/Login/Login";
 
 function App() {
-  const [, dispatch] = useAuthContext();
+  const [state, dispatch] = useAuthContext();
 
-  // if (!state.isAuthenticated) {
-  //   return <Login />;
-  // }
+  useEffect(() => {
+    checkWalletConfigurable();
+  }, [state.isAuthenticated]);
 
   const checkWalletConfigurable = async () => {
     let wallet, tezos, dapp, accountBalance;
@@ -60,10 +59,10 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    checkWalletConfigurable();
-  }, []);
-
+  if (!state.isAuthenticated) {
+    return <Login />;
+  }
+  
   return (
     <div className="App">
       <Navbar />
