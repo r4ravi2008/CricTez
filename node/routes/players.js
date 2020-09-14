@@ -1,4 +1,5 @@
 const express = require("express");
+const { isAdmin } = require("../middleware/controller");
 const router = express.Router();
 const {
   Player,
@@ -20,7 +21,7 @@ router.get("/", async (req, res) => {
 });
 
 // UPDATE ALL PLAYERS WITH POINTS ZERO
-router.get("/updatepoints/all", async (req, res) => {
+router.get("/updatepoints/all", isAdmin, async (req, res) => {
   try {
     const player = await Player.updateMany(
       {},
@@ -64,7 +65,7 @@ router.get("/playerdetails/:id", async (req, res) => {
 });
 
 // ADD NEW PLAYER
-router.post("/newplayer/", async (req, res) => {
+router.post("/newplayer/", isAdmin, async (req, res) => {
   const result = validatePlayer(req.body);
   if (result.error) {
     res.status(400).send(result.error.details[0].message);
@@ -80,7 +81,7 @@ router.post("/newplayer/", async (req, res) => {
 });
 
 // UPDATE PLAYER DETAILS
-router.put("/update/:id", async (req, res) => {
+router.put("/update/:id", isAdmin, async (req, res) => {
   const id = req.params.id;
   const result = validatePlayer(req.body);
   if (result.error) {
@@ -99,7 +100,7 @@ router.put("/update/:id", async (req, res) => {
 });
 
 // DELETE PLAYER
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id", isAdmin, async (req, res) => {
   const id = req.params.id;
   try {
     const player = await Player.findOne({ player_id: id });

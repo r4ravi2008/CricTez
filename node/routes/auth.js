@@ -9,13 +9,13 @@ router.post("/login", async (req, res) => {
 
     if (user) {
       const payload = {
-        name: req.body.profileObj.name,
-        email: req.body.profileObj.email,
-        imageUrl: req.body.profileObj.imageUrl,
-        google_id: req.body.googleId,
-        admin: false,
+        name: user.name,
+        email: user.email,
+        imageUrl: user.imageUrl,
+        google_id: user.google_id,
+        admin: user.admin,
       };
-      const token = jwt.sign(payload, process.env.SECRET_KEY);
+      const token = jwt.sign(payload, process.env.JWT_SECRET_KEY);
       res.json({
         error: false,
         token,
@@ -39,7 +39,7 @@ router.post("/login", async (req, res) => {
         imageUrl: newUser.imageUrl,
         google_id: newUser.google_id,
       };
-      const token = jwt.sign(payload, "SECRET KEY");
+      const token = jwt.sign(payload, process.env.JWT_SECRET_KEY);
       res.json({
         error: false,
         token,

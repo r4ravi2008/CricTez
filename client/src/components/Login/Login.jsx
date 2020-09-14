@@ -8,8 +8,11 @@ import { login } from "../../api/auth";
 
 function Login() {
   const responseGoogle = async (res) => {
-    console.log(res);
     const data = await login(res);
+    console.log(data.token);
+    localStorage.setItem("token", JSON.stringify(data.token));
+    console.log(localStorage.getItem("token"));
+    localStorage.setItem("user", JSON.stringify(data.user));
     dispatch({
       type: LOGIN,
       payload: {

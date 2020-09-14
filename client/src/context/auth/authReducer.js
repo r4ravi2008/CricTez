@@ -9,7 +9,7 @@ const {
 
 export const initialState = {
   heading: "Buy Cards",
-  isAuthenticated: false,
+  isAuthenticated: localStorage.getItem("user") ? true : false,
   user: localStorage.getItem("user"),
   token: localStorage.getItem("token"),
   contract: null,
