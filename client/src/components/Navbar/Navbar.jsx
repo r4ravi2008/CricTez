@@ -29,8 +29,10 @@ export default function MainNavbar(props) {
           <li className="nav-item small-primary">
             <FaBell className="fa-icons" />
           </li>
-          <li className="nav-item small-primary">
-            <FaSignOutAlt className="fa-icons" />
+          <li className="nav-item small-primary" onClick={logout}>
+            <LinkContainer to="/">
+              <FaSignOutAlt className="fa-icons" />
+            </LinkContainer>
           </li>
         </Nav>
       </Navbar.Collapse>

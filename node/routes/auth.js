@@ -45,7 +45,6 @@ router.post("/login", async (req, res) => {
         token,
         user: {
           ...payload,
-          _id: user._id,
         },
       });
     }
