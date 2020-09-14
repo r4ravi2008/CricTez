@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const { Player, validatePlayer, shortPlayer } = require("../models/player");
+const { isAuthenticated, isAdmin } = require("../middleware/controller");
 
 // GET TOKEN ALONG WITH PLAYER DETAILS & FULL METADATA
 router.get("/tokens/tokendetails/:id", async (req, res) => {
@@ -66,7 +67,7 @@ router.get("/players/:id", async (req, res) => {
 });
 
 // GET OWNED TOKENS
-router.get("/owned/:address", async (req, res) => {
+router.get("/owned/:address", isAuthenticated, async (req, res) => {
   const address = req.params.address;
   try {
     const response = await axios.get(
