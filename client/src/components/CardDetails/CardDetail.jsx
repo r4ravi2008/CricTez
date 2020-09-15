@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import PlayerDetail from "../PlayerDetail/PlayerDetail";
-import { Container, Row, Col, Button, Form } from "react-bootstrap";
-import "./CardDetail.css";
+import React, { useEffect, useState } from "react";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { useAuthContext } from "../../context/auth/authContext";
+import PlayerDetail from "../PlayerDetail/PlayerDetail";
 import TxToast from "../TxToast/TxToast";
+import "./CardDetail.css";
 
 function CardDetails(props) {
-  const [state, dipatch] = useAuthContext();
+  const [state] = useAuthContext();
   const [card, setCard] = useState({});
   const [price, setprice] = useState();
   const [tInitiated, setTInitiated] = useState(false);

@@ -1,16 +1,14 @@
-import React, { useState } from "react";
-import { LOGOUT } from "../../context/types";
-import { useAuthContext } from "../../context/auth/authContext";
-import Navbar from "react-bootstrap/Navbar";
+import React from "react";
 import Nav from "react-bootstrap/Nav";
-import "./Navbar.css";
-import { LinkContainer } from "react-router-bootstrap";
+import Navbar from "react-bootstrap/Navbar";
 import { FaBell, FaSignOutAlt } from "react-icons/fa";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { LinkContainer } from "react-router-bootstrap";
+import { useAuthContext } from "../../context/auth/authContext";
+import { LOGOUT } from "../../context/types";
+import "./Navbar.css";
 
-export default function MainNavbar(props) {
-  const [state, dispatch] = useAuthContext();
+export default function MainNavbar() {
+  const [, dispatch] = useAuthContext();
 
   const logout = () => {
     dispatch({

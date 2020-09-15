@@ -1,15 +1,15 @@
+import { ThanosWallet } from "@thanos-wallet/dapp";
 import React from "react";
 import { Button, Col, Row } from "react-bootstrap";
-import { useAuthContext } from "../../context/auth/authContext";
-import PageHeading from "../PageHeading/PageHeading";
-import "./Balance.css";
-import { ThanosWallet } from "@thanos-wallet/dapp";
 import { contractAddress } from "../../constants/contract";
+import { useAuthContext } from "../../context/auth/authContext";
 import {
   SET_CONTRACT,
   SET_WALLET_ADDRESS,
-  SET_WALLET_BALANCE,
+  SET_WALLET_BALANCE
 } from "../../context/types";
+import PageHeading from "../PageHeading/PageHeading";
+import "./Balance.css";
 
 function Balance(props) {
   const [state, dispatch] = useAuthContext();

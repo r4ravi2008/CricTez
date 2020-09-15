@@ -1,6 +1,6 @@
+import { motion } from "framer-motion";
 import React from "react";
 import "./PageHeading.css";
-import { motion } from "framer-motion";
 
 function PageHeading({ text }) {
   const variantsUp = {

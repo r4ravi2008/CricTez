@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import CardDetail from "../components/CardDetails/CardDetail.jsx";
 import RouteTransition from "../components/RouteTransition/RouteTransition.jsx";
 

@@ -9,10 +9,10 @@ function PlayerCardSm(props) {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        color : "white"
+        color: "white",
       }}
     >
-      <img src={data.image_url} />
+      <img src={data.image_url} alt="img" />
       <div className="info">
         <h2>{data.name}</h2>
         <h4>{data.role}</h4>

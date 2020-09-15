@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import Login from "../components/Login/Login";
-import { useAuthContext } from "../context/auth/authContext";
 
 function LoginPage() {
   const variantsUp = {

@@ -1,20 +1,19 @@
-import React from "react";
-import GoogleLogin from "react-google-login";
-import { useAuthContext } from "../../context/auth/authContext";
-import { LOGIN, LOGOUT, WALLET_CONNECTED } from "../../context/types";
-import { oauthClientid } from "../../constants/google-oauth-clientid";
-import "./Login.css";
-import { login } from "../../api/auth";
-import { Button, Spinner } from "react-bootstrap";
-import { useState } from "react";
 import { ThanosWallet } from "@thanos-wallet/dapp";
+import React, { useState } from "react";
+import { Button, Spinner } from "react-bootstrap";
+import GoogleLogin from "react-google-login";
+import { login } from "../../api/auth";
 import { contractAddress } from "../../constants/contract";
+import { oauthClientid } from "../../constants/google-oauth-clientid";
+import { useAuthContext } from "../../context/auth/authContext";
 import {
+  LOGIN,
   SET_CONTRACT,
   SET_WALLET_ADDRESS,
   SET_WALLET_BALANCE,
+  WALLET_CONNECTED,
 } from "../../context/types";
-import { useEffect } from "react";
+import "./Login.css";
 
 function Login() {
   const [state, dispatch] = useAuthContext();
@@ -38,12 +37,6 @@ function Login() {
     setLoading(false);
   };
 
-  const logout = () => {
-    dispatch({
-      type: LOGOUT,
-    });
-  };
-
   const checkWalletConfigurable = async () => {
     setLoading(true);
     let wallet, tezos, dapp, accountBalance;
@@ -57,7 +50,7 @@ function Login() {
         (await tezos.tz.getBalance(wallet.pkh)) / 1000000
       ).toFixed(2);
       dapp = await tezos.wallet.at(contractAddress);
-
+      localStorage.setItem("userAddress", wallet.pkh);
       dispatch({
         type: SET_CONTRACT,
         payload: {
@@ -70,6 +63,7 @@ function Login() {
           userAddress: wallet.pkh,
         },
       });
+      console.log(accountBalance)
       dispatch({
         type: SET_WALLET_BALANCE,
         payload: {

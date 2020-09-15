@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
-import { useAuthContext } from "./context/auth/authContext";
-import Navbar from "../src/components/Navbar/Navbar";
-import Sidebar from "./components/Sidebar/Sidebar";
+import React from "react";
 import { Row } from "react-bootstrap";
-import Routes from "./Routes";
-import { useLocation } from "react-router-dom";
+import Navbar from "../src/components/Navbar/Navbar";
+import "./App.css";
+import Sidebar from "./components/Sidebar/Sidebar";
+import { useAuthContext } from "./context/auth/authContext";
 import LoginPage from "./pages/LoginPage";
+import Routes from "./Routes";
+
 
 function App() {
   const [state, dispatch] = useAuthContext();

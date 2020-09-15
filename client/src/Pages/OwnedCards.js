@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { fetchOwnedTokens } from "../api/playerMetadata";
-import PlayerCard from "../components/PlayerCard/PlayerCard";
-import { useAuthContext } from "../context/auth/authContext";
-import PageHeading from "../components/PageHeading/PageHeading";
 import Balance from "../components/Balance/Balance";
-import { motion } from "framer-motion";
+import PlayerCard from "../components/PlayerCard/PlayerCard";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
-import { SET_NAVBAR_HEADING, SET_OWNED_CARDS } from "../context/types";
+import { useAuthContext } from "../context/auth/authContext";
+import { SET_OWNED_CARDS } from "../context/types";
 
 function OwnedCards(props) {
   const [state, dispatch] = useAuthContext();

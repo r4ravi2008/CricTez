@@ -1,22 +1,20 @@
 import React from "react";
 import {
-  Route,
+  Redirect, Route,
   Switch,
-  BrowserRouter as Router,
-  Redirect,
-  useLocation,
+  useLocation
 } from "react-router-dom";
+import AddPlayer from "./pages/AddPlayer";
 import BuyCards from "./pages/BuyCards";
-import SellCards from "./pages/SellCards";
+import CardDetails from "./pages/CardDetails";
+import Match from "./pages/Match";
+import MintToken from "./pages/MintToken";
 import OwnedCards from "./pages/OwnedCards";
 import Play from "./pages/Play";
-import Profile from "./pages/Profile";
 import PlayerDetails from "./pages/PlayerDetails";
-import CardDetails from "./pages/CardDetails";
-import AddPlayer from "./pages/AddPlayer";
-import MintToken from "./pages/MintToken";
-import Match from "./pages/Match";
+import Profile from "./pages/Profile";
 import Search from "./pages/Search";
+import SellCards from "./pages/SellCards";
 
 
 const Routes = () => {

@@ -1,27 +1,18 @@
-import React, { useEffect, Fragment } from "react";
-import { useState } from "react";
+import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { Card } from "react-bootstrap";
 import { fetchTokenDetails } from "../../api/playerMetadata";
-import { Card, Spinner, Button } from "react-bootstrap";
-import "./SelectCard.css";
-import { useHistory } from "react-router-dom";
 import { teamColors } from "../../constants/teamColors";
-import { motion, AnimatePresence } from "framer-motion";
-import { LinkContainer } from "react-router-bootstrap";
-import Form from "react-bootstrap/Form";
+import "./SelectCard.css";
 
 export default function SelectCard(props) {
   const { data, selectedTokens, setselectedTokens } = props;
   const [tokenDetails, setTokenDetails] = useState();
   const [selected, setSelected] = useState(false);
-  const histroy = useHistory();
 
   useEffect(() => {
     fetchTokenDetails(data.key).then((res) => setTokenDetails(res));
   }, [data.key]);
-
-  const navigate = () => {
-    histroy.push(`/card/${tokenDetails.token_id}`, tokenDetails);
-  };
 
   const variants = {
     visible: { opacity: 1, transition: { duration: 0.75 } },

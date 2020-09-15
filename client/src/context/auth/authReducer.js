@@ -12,11 +12,11 @@ const {
 
 export const initialState = {
   isAuthenticated: localStorage.getItem("user") ? true : false,
-  user: localStorage.getItem("user"),
-  token: localStorage.getItem("token"),
-  walletConnected: false,
+  walletConnected: localStorage.getItem("userAddress") ? true : false,
+  user: localStorage.getItem("user") || "",
+  token: localStorage.getItem("token") || "",
   contract: null,
-  userAddress: null,
+  userAddress: localStorage.getItem("userAddress") || "",
   balance: 0.0,
   saleCards: [],
   ownedCards: [],

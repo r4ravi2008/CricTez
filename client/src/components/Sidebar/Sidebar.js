@@ -1,12 +1,11 @@
 import React from "react";
-import "./Sidebar.css";
-import { HiHome } from "react-icons/hi";
+import Nav from "react-bootstrap/esm/Nav";
+import { BsSearch } from "react-icons/bs";
 import { FaExchangeAlt, FaRegAddressCard } from "react-icons/fa";
 import { GiAmericanFootballHelmet } from "react-icons/gi";
-import { BsSearch } from "react-icons/bs";
-import { HiUserCircle } from "react-icons/hi";
+import { HiHome, HiUserCircle } from "react-icons/hi";
 import { LinkContainer } from "react-router-bootstrap";
-import Nav from "react-bootstrap/esm/Nav";
+import "./Sidebar.css";
 
 function Sidebar() {
   return (

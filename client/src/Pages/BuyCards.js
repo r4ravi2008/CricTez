@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import PlayerCard from "../components/PlayerCard/PlayerCard";
 import Container from "react-bootstrap/Container";
 import { fetchTokensOnSale } from "../api/playerMetadata";
-import { useAuthContext } from "../context/auth/authContext";
 import Balance from "../components/Balance/Balance";
+import PlayerCard from "../components/PlayerCard/PlayerCard";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
+import { useAuthContext } from "../context/auth/authContext";
+import { SET_CARDS_FOR_SALE } from "../context/types";
 import "./styles.css";
-import { SET_CARDS_FOR_SALE, SET_NAVBAR_HEADING } from "../context/types";
 
 function BuyCards() {
   const [state, dispatch] = useAuthContext();

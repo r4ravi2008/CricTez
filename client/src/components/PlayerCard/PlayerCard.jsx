@@ -1,13 +1,10 @@
-import React, { useEffect, Fragment } from "react";
-import { useState } from "react";
-import { fetchTokenDetails } from "../../api/playerMetadata";
-import { Card, Spinner, Button } from "react-bootstrap";
-import "./PlayerCard.css";
+import { motion } from "framer-motion";
+import React, { Fragment, useEffect, useState } from "react";
+import { Card } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
+import { fetchTokenDetails } from "../../api/playerMetadata";
 import { teamColors } from "../../constants/teamColors";
-import { motion, AnimatePresence } from "framer-motion";
-import { LinkContainer } from "react-router-bootstrap";
-import Form from "react-bootstrap/Form";
+import "./PlayerCard.css";
 
 export default function PlayerCard(props) {
   const { data } = props;

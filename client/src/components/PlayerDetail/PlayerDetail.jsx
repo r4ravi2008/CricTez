@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import "./PlayerDetail.css";
-import { Container, Row, Col } from "react-bootstrap";
+import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { Col, Row } from "react-bootstrap";
 import { teamColors } from "../../constants/teamColors";
-import { motion, AnimatePresence } from "framer-motion";
-import PageHeading from "../PageHeading/PageHeading";
+import "./PlayerDetail.css";
 
 function PlayerDetail(props) {
   const [data, setData] = useState({});
@@ -103,13 +102,9 @@ function PlayerDetail(props) {
       </Row>
       <div className="playerdetails__bio">{data.bio}</div>
       <div className="player__details__stats">
-        <div className="batting__stats">
-          <h3></h3>
-        </div>
+        <div className="batting__stats"></div>
         <br />
-        <div className="bowling__stats">
-          <h3></h3>
-        </div>
+        <div className="bowling__stats"></div>
       </div>
     </motion.div>
   );

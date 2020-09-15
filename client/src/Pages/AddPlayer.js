@@ -1,20 +1,18 @@
-import React, { useState } from "react";
-import { Container, Form, Button } from "react-bootstrap";
-import PlayerCard from "../components/PlayerCard/PlayerCard";
+import React, { useEffect, useState } from "react";
+import { Button, Container, Form } from "react-bootstrap";
 import {
   fetchPlayerbyName,
-  getPlayersBigmapLength,
+  getPlayersBigmapLength
 } from "../api/playerMetadata";
-import { useAuthContext } from "../context/auth/authContext";
-import PlayerCardSm from "../components/PlayerCardSm/PlayerCardSm";
 import PageHeading from "../components/PageHeading/PageHeading";
+import PlayerCardSm from "../components/PlayerCardSm/PlayerCardSm";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
-import { useEffect } from "react";
+import { useAuthContext } from "../context/auth/authContext";
 import { SET_NAVBAR_HEADING } from "../context/types";
 
 function AddPlayer() {
   const [state, dispatch] = useAuthContext();
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [metadata, setMetadata] = useState("");
   const [data, setData] = useState();

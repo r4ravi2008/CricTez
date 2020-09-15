@@ -8,7 +8,7 @@ export const fetchTokenDetails = async (id) => {
   console.log("Fetch Token Details");
   try {
     const res = await axios.get(`${server}/storage/tokens/tokendetails/${id}`);
-    if (res.status == 200) return res.data;
+    if (res.status === 200) return res.data;
   } catch (error) {
     console.log({ error });
   }
@@ -18,7 +18,7 @@ export const fetchPlayerDetails = async (id) => {
   console.log("Fetch Player Details");
   try {
     const res = await axios.get(`${server}/storage/playerdetails/${id}`);
-    if (res.status == 200) return res.data;
+    if (res.status === 200) return res.data;
   } catch (error) {
     console.log({ error });
   }
