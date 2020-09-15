@@ -7,24 +7,21 @@ import PageHeading from "../components/PageHeading/PageHeading";
 import Balance from "../components/Balance/Balance";
 import { motion } from "framer-motion";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
-import { SET_NAVBAR_HEADING } from "../context/types";
+import { SET_NAVBAR_HEADING, SET_OWNED_CARDS } from "../context/types";
 
 function OwnedCards(props) {
   const [state, dispatch] = useAuthContext();
-  const [tokens, setTokens] = useState([]);
+  const [tokens, setTokens] = useState([state.owned_cards]);
 
   useEffect(() => {
     if (state.userAddress)
-      fetchOwnedTokens(state.userAddress).then((res) => setTokens(res));
-  }, [state]);
-
-  useEffect(() => {
-    dispatch({
-      type: SET_NAVBAR_HEADING,
-      payload: {
-        heading: props.sellpage ? "Sell Cards" : "Owned Cards",
-      },
-    });
+      fetchOwnedTokens(state.userAddress).then((res) => {
+        setTokens(res);
+        dispatch({
+          type: SET_OWNED_CARDS,
+          payload: { cards: res },
+        });
+      });
   }, []);
 
   return (

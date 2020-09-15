@@ -6,23 +6,21 @@ import { useAuthContext } from "../context/auth/authContext";
 import Balance from "../components/Balance/Balance";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
 import "./styles.css";
-import { SET_NAVBAR_HEADING } from "../context/types";
+import { SET_CARDS_FOR_SALE, SET_NAVBAR_HEADING } from "../context/types";
 
 function BuyCards() {
-  const [tokens, setTokens] = useState([]);
   const [state, dispatch] = useAuthContext();
-  useEffect(() => {
-    fetchTokensOnSale().then((res) => setTokens(res));
-    window.scrollTo(0, 0);
-  }, []);
+  const [tokens, setTokens] = useState([state.cards_for_sale]);
 
   useEffect(() => {
-    dispatch({
-      type: SET_NAVBAR_HEADING,
-      payload: {
-        heading: "Buy Cards",
-      },
+    fetchTokensOnSale().then((res) => {
+      setTokens(res);
+      dispatch({
+        type: SET_CARDS_FOR_SALE,
+        payload: { cards: res },
+      });
     });
+    window.scrollTo(0, 0);
   }, []);
 
   return (

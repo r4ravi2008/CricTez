@@ -5,6 +5,8 @@ const {
   SET_WALLET_ADDRESS,
   SET_WALLET_BALANCE,
   SET_NAVBAR_HEADING,
+  SET_CARDS_FOR_SALE,
+  SET_OWNED_CARDS,
 } = require("../types");
 
 export const initialState = {
@@ -15,6 +17,8 @@ export const initialState = {
   contract: null,
   userAddress: null,
   balance: 0.0,
+  cards_for_sale: [],
+  owned_cards: [],
 };
 
 const reducer = (state, action) => {
@@ -48,15 +52,29 @@ const reducer = (state, action) => {
         ...state,
         userAddress: action.payload.userAddress,
       };
+
     case SET_WALLET_BALANCE:
       return {
         ...state,
         balance: action.payload.balance,
       };
+
     case SET_NAVBAR_HEADING:
       return {
         ...state,
         heading: action.payload.heading,
+      };
+
+    case SET_CARDS_FOR_SALE:
+      return {
+        ...state,
+        cards_for_sale: action.payload.cards,
+      };
+
+    case SET_OWNED_CARDS:
+      return {
+        ...state,
+        owned_cards: action.payload.cards,
       };
 
     default:
