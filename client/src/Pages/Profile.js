@@ -1,10 +1,11 @@
 import React from "react";
 import PageHeading from "../components/PageHeading/PageHeading";
 import { useAuthContext } from "../context/auth/authContext";
-import { Container } from "react-bootstrap";
+import { Container, Toast } from "react-bootstrap";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
 import { SET_NAVBAR_HEADING } from "../context/types";
 import { useEffect } from "react";
+import { useState } from "react";
 
 function Profile() {
   const [state, dispatch] = useAuthContext();
@@ -17,6 +18,9 @@ function Profile() {
       },
     });
   }, []);
+  const [showA, setShowA] = useState(true);
+
+  const toggleShowA = () => setShowA(!showA);
 
   return (
     <RouteTransition>

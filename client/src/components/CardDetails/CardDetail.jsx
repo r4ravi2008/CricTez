@@ -3,6 +3,7 @@ import PlayerDetail from "../PlayerDetail/PlayerDetail";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import "./CardDetail.css";
 import { useAuthContext } from "../../context/auth/authContext";
+import TxToast from "../TxToast/TxToast";
 
 function CardDetails(props) {
   const [state, dipatch] = useAuthContext();
@@ -11,49 +12,48 @@ function CardDetails(props) {
   const [tInitiated, setTInitiated] = useState(false);
   const [tCompleted, setTCompleted] = useState(false);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setCard(props.data);
-    console.log(state);
   }, []);
 
   const buyToken = async () => {
     setError(null);
-    setTInitiated(true);
-    console.log("Transaction Initiated");
-    console.log(card.sale.price);
+    setLoading(true);
     try {
       const operation = await state.contract.methods
         .buyToken(card.token_id)
         .send({ amount: parseInt(card?.sale?.price) / 1000000 });
+      setTInitiated(true);
+      console.log(operation);
       await operation.confirmation();
-      console.log("Transaction Completed");
       setTCompleted(true);
     } catch (error) {
       setError(error.message);
     }
+    setLoading(false);
   };
 
   const sellToken = async () => {
     setError(null);
-    setTInitiated(true);
-    console.log("Transaction Initiated");
+    setLoading(true);
     try {
       const operation = await state.contract.methods
         .sellToken(price * 1000000, card.token_id)
         .send();
+      setTInitiated(true);
       await operation.confirmation();
-      console.log("Transaction Completed");
       setTCompleted(true);
     } catch (error) {
       setError(error.message);
     }
+    setLoading(false);
   };
 
   return (
     <React.Fragment>
       <div className="card-detail-container">
-        <div className="error"></div>
         {card ? (
           <>
             <br />
@@ -108,6 +108,7 @@ function CardDetails(props) {
                 <Button
                   className="card__buybutton"
                   onClick={card.owned ? sellToken : buyToken}
+                  disabled={loading}
                 >
                   {card.owned ? "Sell" : "Buy"}
                 </Button>
@@ -124,7 +125,11 @@ function CardDetails(props) {
         ) : (
           " "
         )}
-        {tCompleted ? "Token Bought Successfully" : ""}
+        <div className="toast-container">
+          {error ? <TxToast text={error} /> : null}
+          {tInitiated ? <TxToast text="Transaction Initiated" /> : null}
+          {tCompleted ? <TxToast text="Transaction Completed" /> : null}
+        </div>
       </div>
       <PlayerDetail data={props.data} showImage={false} />
     </React.Fragment>

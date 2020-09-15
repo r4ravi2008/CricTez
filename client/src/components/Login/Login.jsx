@@ -93,7 +93,6 @@ function Login() {
           className="google-oauth-button"
           clientId={oauthClientid}
           onSuccess={responseGoogle}
-          onFailure={responseGoogle}
           cookiePolicy={"single_host_origin"}
           className="login__google"
           disabled={loading}
