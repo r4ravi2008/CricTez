@@ -7,18 +7,19 @@ const {
   SET_NAVBAR_HEADING,
   SET_CARDS_FOR_SALE,
   SET_OWNED_CARDS,
+  WALLET_CONNECTED,
 } = require("../types");
 
 export const initialState = {
-  heading: "Buy Cards",
   isAuthenticated: localStorage.getItem("user") ? true : false,
   user: localStorage.getItem("user"),
   token: localStorage.getItem("token"),
+  walletConnected: false,
   contract: null,
   userAddress: null,
   balance: 0.0,
-  cards_for_sale: [],
-  owned_cards: [],
+  saleCards: [],
+  ownedCards: [],
 };
 
 const reducer = (state, action) => {
@@ -68,13 +69,19 @@ const reducer = (state, action) => {
     case SET_CARDS_FOR_SALE:
       return {
         ...state,
-        cards_for_sale: action.payload.cards,
+        saleCards: action.payload.cards,
       };
 
     case SET_OWNED_CARDS:
       return {
         ...state,
-        owned_cards: action.payload.cards,
+        ownedCards: action.payload.cards,
+      };
+
+    case WALLET_CONNECTED:
+      return {
+        ...state,
+        walletConnected: true,
       };
 
     default:

@@ -10,7 +10,7 @@ import { SET_CARDS_FOR_SALE, SET_NAVBAR_HEADING } from "../context/types";
 
 function BuyCards() {
   const [state, dispatch] = useAuthContext();
-  const [tokens, setTokens] = useState([state.cards_for_sale]);
+  const [tokens, setTokens] = useState([]);
 
   useEffect(() => {
     fetchTokensOnSale().then((res) => {

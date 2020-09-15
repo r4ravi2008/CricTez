@@ -11,7 +11,7 @@ import { SET_NAVBAR_HEADING, SET_OWNED_CARDS } from "../context/types";
 
 function OwnedCards(props) {
   const [state, dispatch] = useAuthContext();
-  const [tokens, setTokens] = useState([state.owned_cards]);
+  const [tokens, setTokens] = useState([]);
 
   useEffect(() => {
     if (state.userAddress)

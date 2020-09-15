@@ -5,15 +5,15 @@ import { useAuthContext } from "./context/auth/authContext";
 import Navbar from "../src/components/Navbar/Navbar";
 import Sidebar from "./components/Sidebar/Sidebar";
 import { Row } from "react-bootstrap";
-import Login from "./components/Login/Login";
 import Routes from "./Routes";
 import { useLocation } from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
   const [state, dispatch] = useAuthContext();
 
-  if (!state.isAuthenticated) {
-    return <Login />;
+  if (!state.isAuthenticated || !state.walletConnected) {
+    return <LoginPage />;
   }
 
   return (
