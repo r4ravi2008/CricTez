@@ -7,22 +7,22 @@ import "./Login.css";
 import { login } from "../../api/auth";
 
 function Login() {
+  const [state, dispatch] = useAuthContext();
+
   const responseGoogle = async (res) => {
-    const data = await login(res);
-    console.log(data.token);
-    localStorage.setItem("token", JSON.stringify(data.token));
-    console.log(localStorage.getItem("token"));
-    localStorage.setItem("user", JSON.stringify(data.user));
-    dispatch({
-      type: LOGIN,
-      payload: {
-        token: data.token,
-        user: data.user,
-      },
+    const data = login(res).then((data) => {
+      console.log(data);
+      localStorage.setItem("token", JSON.stringify(data.token));
+      localStorage.setItem("user", JSON.stringify(data.user));
+      dispatch({
+        type: LOGIN,
+        payload: {
+          token: data.token,
+          user: data.user,
+        },
+      });
     });
   };
-
-  const [state, dispatch] = useAuthContext();
 
   return (
     <div className="login__main">

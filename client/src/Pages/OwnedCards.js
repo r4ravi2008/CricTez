@@ -22,7 +22,7 @@ function OwnedCards(props) {
           payload: { cards: res },
         });
       });
-  }, []);
+  }, [state.userAddress]);
 
   return (
     <>
