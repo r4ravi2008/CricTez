@@ -63,7 +63,6 @@ function Login() {
           userAddress: wallet.pkh,
         },
       });
-      console.log(accountBalance)
       dispatch({
         type: SET_WALLET_BALANCE,
         payload: {
@@ -84,7 +83,6 @@ function Login() {
       {!state.isAuthenticated ? (
         <GoogleLogin
           theme="dark"
-          className="google-oauth-button"
           clientId={oauthClientid}
           onSuccess={responseGoogle}
           cookiePolicy={"single_host_origin"}
@@ -93,7 +91,7 @@ function Login() {
         />
       ) : (
         <div className="connect-wallet-container">
-          <img src={user.imageUrl} className="avatar" />
+          <img src={user.imageUrl} className="avatar" alt="avatar" />
           <h1 className="subheading">{user.name}</h1>
           {loading ? <Spinner animation="border" /> : null}
           <br />

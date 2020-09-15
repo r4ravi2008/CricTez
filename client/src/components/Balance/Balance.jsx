@@ -6,7 +6,7 @@ import { useAuthContext } from "../../context/auth/authContext";
 import {
   SET_CONTRACT,
   SET_WALLET_ADDRESS,
-  SET_WALLET_BALANCE
+  SET_WALLET_BALANCE,
 } from "../../context/types";
 import PageHeading from "../PageHeading/PageHeading";
 import "./Balance.css";
@@ -90,6 +90,7 @@ function Balance(props) {
               <h1 className="balance-heading">{state?.balance}</h1>
               <img
                 className="tez-logo"
+                alt="tez-logo"
                 src={require("../../assests/tez-logo.png")}
               />
             </div>

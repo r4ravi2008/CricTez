@@ -9,6 +9,7 @@ import BuyCards from "./pages/BuyCards";
 import CardDetails from "./pages/CardDetails";
 import Match from "./pages/Match";
 import MintToken from "./pages/MintToken";
+import Notifications from "./pages/Notifications";
 import OwnedCards from "./pages/OwnedCards";
 import Play from "./pages/Play";
 import PlayerDetails from "./pages/PlayerDetails";
@@ -54,6 +55,9 @@ const Routes = () => {
       </Route>
       <Route path="/matches" exact>
         <Match />
+      </Route>
+      <Route path="/notifications" exact>
+        <Notifications />
       </Route>
       <Redirect to="/" />
     </Switch>
