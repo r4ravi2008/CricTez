@@ -497,7 +497,7 @@ class FA2(sp.Contract):
             selected_tokens=sp.map(
                 tkey=sp.TAddress, tvalue=sp.TRecord(tokens=sp.TSet(sp.TNat))),
             matches=sp.map(tkey=sp.TNat, tvalue=sp.TRecord(
-                teamA=sp.TString, teamB=sp.TString, active=sp.TBool, finished=sp.TBool, ends=sp.TTimestamp, date=sp.TString)),
+                teamA=sp.TString, teamB=sp.TString, active=sp.TBool, finished=sp.TBool, ends=sp.TTimestamp, date=sp.TString, compete=sp.TBool)),
         )
 
     @sp.entry_point
@@ -703,7 +703,7 @@ class FA2(sp.Contract):
         sp.verify(~self.data.matches.contains(params.match_id),
                   message="Match Already Exists.")
         self.data.matches[params.match_id] = sp.record(
-            teamA=params.teamA, teamB=params.teamB, active=False, ends=sp.timestamp(0), date=params.date, finished=False)
+            teamA=params.teamA, teamB=params.teamB, active=False, ends=sp.timestamp(0), date=params.date, finished=False, compete=False)
 
     @sp.entry_point
     def activateMatch(self, params):
@@ -721,6 +721,19 @@ class FA2(sp.Contract):
         self.data.matches[params.match_id].active = True
         ends = sp.set_type_expr(params.ends, sp.TTimestamp)
         self.data.matches[params.match_id].ends = ends
+        self.data.matches[params.match_id].compete = True
+
+    @sp.entry_point
+    def endCompete(self, params):
+        sp.verify(sp.sender == self.data.administrator,
+                  message="Only Admin Can Start/End a Match.")
+        sp.verify(self.data.matches.contains(params.match_id),
+                  message="Match Does not exist.")
+        sp.verify(self.data.matches[params.match_id].active ==
+                  True, message="Match is not active")
+        sp.verify(self.data.matches[params.match_id].finished ==
+                  False, message="Match is finished.")
+        self.data.matches[params.match_id].compete = False
 
     @sp.entry_point
     def endMatch(self, params):
@@ -731,6 +744,8 @@ class FA2(sp.Contract):
                   message="Match does not exists.")
         sp.verify(self.data.matches[params.match_id].active ==
                   True, message="Match is Not Active.")
+        sp.verify(self.data.matches[params.match_id].compete ==
+                  False, message="Compete not Ended.")
         # sp.verify(self.data.matches[params.match_id].ends <= sp.timestamp_from_utc_now(), message = "You Cannot End the Match before its Select Time Ends.")
         sp.for item in self.data.selected_tokens.items():
             sp.for token_id in item.value.tokens.elements():
@@ -746,6 +761,8 @@ class FA2(sp.Contract):
 
     @sp.entry_point
     def selectTeam(self, params):
+        sp.verify(self.data.matches[params.match_id].compete == True,
+                  message="Compete not Yet Started.")
         sp.verify(self.data.matches[params.match_id].active == True,
                   message="Match either does not exists or is inacitve.")
         sp.verify(sp.timestamp_from_utc_now(
@@ -1119,6 +1136,9 @@ def add_test(config, is_default=True):
         scenario.p("User 3 puts owned token for Match.")
         scenario += c1.selectTeam(tokens=[0, 1,
                                           2, 3, 4], match_id=0).run(sender=u3)
+
+        scenario.h4("End Compete")
+        scenario += c1.endCompete(match_id=0).run(sender=admin)
 
         scenario.h4("End Match / Update Card Scores.**")
         scenario += c1.endMatch(match_id=0).run(sender=admin)

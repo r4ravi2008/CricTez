@@ -16,20 +16,20 @@ router.get("/", async (req, res) => {
       .sort({ player_id: 1 });
     res.status(200).send(players);
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message);
   }
 });
 
 // UPDATE ALL PLAYERS WITH POINTS ZERO
-router.get("/updatepoints/all", isAdmin, async (req, res) => {
+router.get("/updatepoints/all", async (req, res) => {
   try {
     const player = await Player.updateMany(
       {},
       { $set: { points: 0, rank: 10000 } }
     );
-    res.send(player);
+    res.status(200).send(player);
   } catch (err) {
-    res.status(error.status).send(error);
+    res.status(error.status).send(error.message);
   }
 });
 
@@ -45,7 +45,7 @@ router.get("/:id", async (req, res) => {
       res.status(200).send(player);
     }
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message);
   }
 });
 
@@ -60,42 +60,44 @@ router.get("/playerdetails/:id", async (req, res) => {
       res.status(200).send(player);
     }
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message);
   }
 });
 
 // ADD NEW PLAYER
-router.post("/newplayer/", isAdmin, async (req, res) => {
+router.post("/newplayer/", async (req, res) => {
   const result = validatePlayer(req.body);
   if (result.error) {
-    res.status(400).send(result.error.details[0].message);
+    res.status(422).send(result.error.details[0].message);
   } else {
     try {
       const player = new Player(req.body);
       const temp = await player.save();
       res.status(200).send(temp);
     } catch (error) {
-      res.status(400).send(error.message[0]);
+      console.log(error);
+      res.status(res.status).send(error.message);
     }
   }
 });
 
 // UPDATE PLAYER DETAILS
-router.put("/update/:id", isAdmin, async (req, res) => {
+router.put("/update/:id", async (req, res) => {
   const id = req.params.id;
   const result = validatePlayer(req.body);
   if (result.error) {
-    return res.status(400).send(result.error.details[0].message);
+    return res.status(422).send(result.error.details[0].message);
   }
   try {
     const player = await Player.findOne({ player_id: id });
     if (!player)
-      return res.status(400).send(`Player with ID : ${id} does not exists`);
+      return res.status(404).send(`Player with ID : ${id} does not exists`);
     let temp = await player.updateOne(req.body);
     temp = await player.save();
+    console.log(id);
     res.status(200).send(temp);
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(400).send(error.message);
   }
 });
 
@@ -109,7 +111,7 @@ router.delete("/delete/:id", isAdmin, async (req, res) => {
     let temp = await player.remove();
     res.status(200).send(temp);
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(400).send(error.message);
   }
 });
 
@@ -125,7 +127,7 @@ router.post("/name/", async (req, res) => {
       res.status(200).send(player);
     }
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(res.status).send(error.message);
   }
 });
 
@@ -139,7 +141,7 @@ router.get("/getplayerpoints/all", async (req, res) => {
       res.status(200).send(player);
     }
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message[0]);
   }
 });
 

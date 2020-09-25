@@ -1,5 +1,5 @@
 import React from "react";
-import { Form } from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 import Container from "react-bootstrap/Container";
 import PageHeading from "../components/PageHeading/PageHeading";
 import RouteTransition from "../components/RouteTransition/RouteTransition";

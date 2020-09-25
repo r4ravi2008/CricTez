@@ -1,10 +1,16 @@
 import React from "react";
+import { lazy } from "react";
+import { Container } from "react-bootstrap";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
+
+const Matches = lazy(() => import("../components/Matches/Matches"));
 
 function Match() {
   return (
     <RouteTransition>
-      <div>All Matches</div>
+      <Container fluid>
+        <Matches />
+      </Container>
     </RouteTransition>
   );
 }

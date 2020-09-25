@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import { useHistory } from "react-router-dom";
 import { useAuthContext } from "../../context/auth/authContext";
 import PlayerDetail from "../PlayerDetail/PlayerDetail";
 import TxToast from "../TxToast/TxToast";
@@ -13,6 +17,7 @@ function CardDetails(props) {
   const [tCompleted, setTCompleted] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const histroy = useHistory();
 
   useEffect(() => {
     setCard(props.data);
@@ -26,9 +31,11 @@ function CardDetails(props) {
         .buyToken(card.token_id)
         .send({ amount: parseInt(card?.sale?.price) / 1000000 });
       setTInitiated(true);
-      console.log(operation);
       await operation.confirmation();
       setTCompleted(true);
+      setTimeout(() => {
+        histroy.push("/owned");
+      }, 3000);
     } catch (error) {
       setError(error.message);
     }
@@ -45,6 +52,9 @@ function CardDetails(props) {
       setTInitiated(true);
       await operation.confirmation();
       setTCompleted(true);
+      setTimeout(() => {
+        histroy.push("/owned");
+      }, 3000);
     } catch (error) {
       setError(error.message);
     }
@@ -127,8 +137,12 @@ function CardDetails(props) {
         )}
         <div className="toast-container">
           {error ? <TxToast text={error} /> : null}
-          {tInitiated ? <TxToast text="Transaction Initiated" /> : null}
-          {tCompleted ? <TxToast text="Transaction Completed" /> : null}
+          {tInitiated ? (
+            <TxToast text="Transaction Initiated. Waiting for confirmation" />
+          ) : null}
+          {tCompleted ? (
+            <TxToast text="Transaction Completed. Redirecting to Owned Cards." />
+          ) : null}
         </div>
       </div>
       <PlayerDetail data={props.data} showImage={false} />

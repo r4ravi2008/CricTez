@@ -16,7 +16,7 @@ const scrapePlayerPoints = async (url) => {
       .attributes["data-player-id"].value;
     const first_rank = parseInt(first[0]);
     const first_name = first[1] + "" + first[2];
-    const first_points = (first[3]);
+    const first_points = first[3];
     let table = document
       .getElementsByTagName("tbody")[0]
       .innerText.replace(/(\r\n|\n|\r)/gm, "\t")
@@ -55,14 +55,16 @@ const updateData = async (data) => {
   try {
     //localhost to be changed
     const update = await axios.put(
-      `http://localhost:4000/api/players/update/${data.playerId}`,
+      `https://tranquil-earth-81896.herokuapp.com/api/players/update/${data.playerId}`,
       { rank: data.rank, points: data.points }
     );
+    console.log({ id: data.playerId, rank: data.rank, points: data.points });
     totalPlayersUpdated++;
   } catch (err) {
+    console.log(err.message);
     //All players are not present in DB which usually causes 404 error
   }
   console.log(totalPlayersUpdated);
 };
 
-scrapePlayerPoints("https://www.iplt20.com/stats/2019/player-points");
+scrapePlayerPoints("https://www.iplt20.com/stats/2020/player-points");

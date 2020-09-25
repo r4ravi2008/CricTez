@@ -1,19 +1,36 @@
 import { motion } from "framer-motion";
 import React, { Fragment, useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
+import Card from "react-bootstrap/Card";
 import { useHistory } from "react-router-dom";
 import { fetchTokenDetails } from "../../api/playerMetadata";
-import { teamColors } from "../../constants/teamColors";
+import { teamColors, teamsInvert } from "../../constants/teams";
+import { useAuthContext } from "../../context/auth/authContext";
+import { ADD_CARD_DETAILS } from "../../context/types";
 import "./PlayerCard.css";
 
 export default function PlayerCard(props) {
   const { data } = props;
   const [tokenDetails, setTokenDetails] = useState();
+  const [state, dispatch] = useAuthContext();
+  const [teamLogoUrl, setTeamLogoUrl] = useState("");
 
   const histroy = useHistory();
 
   useEffect(() => {
-    fetchTokenDetails(data.key).then((res) => setTokenDetails(res));
+    const cachedData = state.tokenDetails.filter(
+      (token) => token.token_id === data.key.toString()
+    );
+    if (cachedData.length == 1) {
+      setTokenDetails(cachedData[0]);
+      return;
+    }
+    fetchTokenDetails(data.key).then((res) => {
+      setTokenDetails(res);
+      dispatch({
+        type: ADD_CARD_DETAILS,
+        payload: { token: res },
+      });
+    });
   }, [data.key]);
 
   const navigate = () => {
@@ -126,10 +143,15 @@ export default function PlayerCard(props) {
             <div className="player-lastname">
               {tokenDetails.name.split(" ")[1]}
             </div>
-            <div className="player-role">{tokenDetails.role}</div>
+            <div className="player-role">{tokenDetails.role.split(" ")[0]}</div>
           </div>
           <div className="team-logo">
-            <img src={require("../../assests/rcb-logo.png")} alt="" />
+            <img
+              src={`https://tranquil-earth-81896.herokuapp.com/teams/${
+                teamsInvert[tokenDetails.team]
+              }-logo.png`}
+              alt="Player"
+            />
           </div>
           <div className="card-score-section">
             <div className="score-heading">Card Score</div>

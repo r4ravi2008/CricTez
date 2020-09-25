@@ -15,9 +15,9 @@ router.get("/", async (req, res) => {
       const match = matchesObj[key];
       matches.push({ key: key, ...match });
     });
-    res.send(matches);
+    res.status(200).send(matches);
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(error.status).send(error.message);
   }
 });
 

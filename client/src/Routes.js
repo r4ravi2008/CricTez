@@ -1,22 +1,18 @@
-import React from "react";
-import {
-  Redirect, Route,
-  Switch,
-  useLocation
-} from "react-router-dom";
-import AddPlayer from "./pages/AddPlayer";
+import React, { lazy } from "react";
+import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 import BuyCards from "./pages/BuyCards";
-import CardDetails from "./pages/CardDetails";
-import Match from "./pages/Match";
-import MintToken from "./pages/MintToken";
-import Notifications from "./pages/Notifications";
-import OwnedCards from "./pages/OwnedCards";
-import Play from "./pages/Play";
-import PlayerDetails from "./pages/PlayerDetails";
-import Profile from "./pages/Profile";
-import Search from "./pages/Search";
-import SellCards from "./pages/SellCards";
 
+const AddPlayer = lazy(() => import("./pages/AddPlayer"));
+const CardDetails = lazy(() => import("./pages/CardDetails"));
+const Match = lazy(() => import("./pages/Match"));
+const MintToken = lazy(() => import("./pages/MintToken"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+const OwnedCards = lazy(() => import("./pages/OwnedCards"));
+const Play = lazy(() => import("./pages/Play"));
+const PlayerDetails = lazy(() => import("./pages/PlayerDetails"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Search = lazy(() => import("./pages/Search"));
+const SellCards = lazy(() => import("./pages/SellCards"));
 
 const Routes = () => {
   let location = useLocation();

@@ -1,17 +1,34 @@
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
+import Card from "react-bootstrap/Card";
 import { fetchTokenDetails } from "../../api/playerMetadata";
-import { teamColors } from "../../constants/teamColors";
+import { teamColors, teams } from "../../constants/teams";
+import { useAuthContext } from "../../context/auth/authContext";
+import { ADD_CARD_DETAILS } from "../../context/types";
 import "./SelectCard.css";
 
 export default function SelectCard(props) {
   const { data, selectedTokens, setselectedTokens } = props;
   const [tokenDetails, setTokenDetails] = useState();
   const [selected, setSelected] = useState(false);
+  const [state, dispatch] = useAuthContext();
+  const { match } = props;
 
   useEffect(() => {
-    fetchTokenDetails(data.key).then((res) => setTokenDetails(res));
+    const cachedData = state.tokenDetails.filter(
+      (token) => token.token_id === data.key.toString()
+    );
+    if (cachedData.length) {
+      setTokenDetails(cachedData[0]);
+      return;
+    }
+    fetchTokenDetails(data.key).then((res) => {
+      setTokenDetails(res);
+      dispatch({
+        type: ADD_CARD_DETAILS,
+        payload: { token: res },
+      });
+    });
   }, [data.key]);
 
   const variants = {
@@ -32,9 +49,9 @@ export default function SelectCard(props) {
       }
       setSelected(true);
       setselectedTokens((prev) => [...prev, tokenDetails]);
+      console.log(selectedTokens);
     }
   };
-
   const SkeletonCard = () => (
     <motion.div
       className="card-container"
@@ -56,7 +73,6 @@ export default function SelectCard(props) {
       </Card>
     </motion.div>
   );
-  console.log(tokenDetails);
 
   return tokenDetails ? (
     <motion.div
@@ -69,7 +85,19 @@ export default function SelectCard(props) {
         className="player-card"
         onClick={props.selectable ? selectCard : null}
         style={
-          props.select && tokenDetails.sale.price ? { display: "none" } : {}
+          props.select &&
+          tokenDetails.sale.price &&
+          (tokenDetails.team === teams[match.teamA] ||
+            tokenDetails.team === teams[match.teamB])
+            ? { display: "none" }
+            : {}
+        }
+        style={
+          props.select &&
+          tokenDetails.team !== teams[match.teamA] &&
+          tokenDetails.team !== teams[match.teamB]
+            ? { display: "none" }
+            : {}
         }
       >
         <Card.Body>

@@ -4,15 +4,15 @@ var user = require("../models/user");
 isAuthenticated = async function (req, res, next) {
   try {
     if (!req.headers.authorization) {
-      return res.json({ error: true, token: null });
+      return res.status(401).json({ error: true, token: null });
     }
     const token = req.headers.authorization.split(" ")[1];
     if (!token) {
-      return res.json({ error: true, token: null });
+      return res.status(401).json({ error: true, token: null });
     }
     var payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
     if (!payload) {
-      return res.json({ error: true, token: null });
+      return res.status(401).json({ error: true, token: null });
     }
     req.token = token;
   } catch (err) {
@@ -23,15 +23,15 @@ isAuthenticated = async function (req, res, next) {
 
 isAdmin = async function (req, res, next) {
   if (!req.headers.authorization) {
-    return res.json({ error: "Header does not  exists", token: null });
+    return res.status(401).json({ error: "Header does not  exists", token: null });
   }
   const token = req.headers.authorization.split(" ")[1];
   if (!token) {
-    return res.json({ error: "Token Not available", token: null });
+    return res.status(401).json({ error: "Token Not available", token: null });
   }
   var payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
   if (!payload) {
-    return res.json({ error: "Incorrect Token", token: null });
+    return res.status(401).json({ error: "Incorrect Token", token: null });
   }
   req.payload = payload;
   user.findOne({ google_id: req.payload.google_id }).then((user1) => {
@@ -45,7 +45,7 @@ isAdmin = async function (req, res, next) {
       req.token = token;
       next();
     } else {
-      res.json({ error: "You are not an Admin" });
+      res.status(401).json({ error: "You are not an Admin" });
     }
   });
 };

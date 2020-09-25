@@ -1,0 +1,16 @@
+.react-datepicker__input-container > input {
+  background-color: var(--background-color-dark);
+  outline: none;
+  border: 1px solid var(--primary-color);
+  color: var(--accent-color);
+  padding: 5px;
+  text-align: center;
+  border-radius: 20px;
+}
+.dropdown-menu {
+  background-color: var(--background-color-dark);
+}
+.dropdown-item {
+  color: var(--accent-color);
+  font-weight: 200;
+}

@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import { Col, Row } from "react-bootstrap";
-import { teamColors } from "../../constants/teamColors";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import { teamColors } from "../../constants/teams";
 import "./PlayerDetail.css";
 
 function PlayerDetail(props) {

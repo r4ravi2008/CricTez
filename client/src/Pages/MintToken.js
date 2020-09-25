@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
 import {
   fetchPlayerbyName,
   getTokensBigmapLength
@@ -14,7 +16,7 @@ function MintToken() {
   const [loading] = useState(false);
   const [playerName, setPlayerName] = useState("");
   const [address, setAddress] = useState("");
-  const [playerID, setPlayerID] = useState(null);
+  const [playerID, setPlayerID] = useState(0);
   const [data, setData] = useState();
   const [error, setError] = useState(null);
 
@@ -24,9 +26,8 @@ function MintToken() {
     console.log("Transaction Initiated");
     try {
       const token_id = await getTokensBigmapLength();
-      console.log(address, playerID, token_id);
       const operation = await state.contract.methods
-        .mint(address, playerID, token_id)
+        .mint(address, 1, playerID, token_id)
         .send();
       await operation.confirmation();
       console.log("Transaction Completed");
@@ -42,7 +43,6 @@ function MintToken() {
     if (player.name) {
       setData(player);
     }
-    console.log(player);
   };
 
   return (
@@ -70,7 +70,7 @@ function MintToken() {
                 <Form.Control
                   type="text"
                   placeholder="Player ID of Above Player"
-                  onChange={(e) => setPlayerID(e.target.value)}
+                  onChange={(e) => setPlayerID(parseInt(e.target.value))}
                 />
               </Form.Group>
               <Form.Group controlId="formBasicPassword">
@@ -84,7 +84,7 @@ function MintToken() {
               <Button
                 variant="primary"
                 type="submit"
-                disabled={loading || !data || !playerID}
+                disabled={!data || !playerID}
                 onClick={mintToken}
               >
                 Mint

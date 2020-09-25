@@ -56,6 +56,8 @@ const shortPlayer = {
   wickets: 1,
   team: 1,
   player_id: 1,
+  bio: 1,
+  nationality: 1,
 };
 
 const playerPoints = {

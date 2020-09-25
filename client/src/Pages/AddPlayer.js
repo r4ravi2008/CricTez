@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import React, { useState } from "react";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
 import {
   fetchPlayerbyName,
   getPlayersBigmapLength
@@ -8,7 +10,8 @@ import PageHeading from "../components/PageHeading/PageHeading";
 import PlayerCardSm from "../components/PlayerCardSm/PlayerCardSm";
 import RouteTransition from "../components/RouteTransition/RouteTransition";
 import { useAuthContext } from "../context/auth/authContext";
-import { SET_NAVBAR_HEADING } from "../context/types";
+
+
 
 function AddPlayer() {
   const [state, dispatch] = useAuthContext();
@@ -18,15 +21,6 @@ function AddPlayer() {
   const [data, setData] = useState();
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    dispatch({
-      type: SET_NAVBAR_HEADING,
-      payload: {
-        heading: "Add Player",
-      },
-    });
-  }, []);
-
   const addPlayer = async (e) => {
     e.preventDefault();
     setError(null);
@@ -34,10 +28,10 @@ function AddPlayer() {
     try {
       const playerId = await getPlayersBigmapLength();
       const operation = await state.contract.methods
-        .addPlayer(1, metadata, playerName, playerId)
+        .addPlayer(state.userAddress, 1, metadata, playerName, playerId)
         .send();
       await operation.confirmation();
-      console.log("Transaction Completed");
+      alert("Transaction Completed");
     } catch (error) {
       setError(error.message);
     }
@@ -48,7 +42,6 @@ function AddPlayer() {
     setPlayerName(e.target.value);
     const player = await fetchPlayerbyName(e.target.value);
     if (player.name) {
-      console.log(player);
       setData(player);
     }
   };

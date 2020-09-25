@@ -9,18 +9,18 @@ router.get("/tokens/tokendetails/:id", async (req, res) => {
   const id = req.params.id;
   try {
     const tokenResponse = await axios.get(
-      `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.ALL_TOKENS_BIGMAP}/values`
+      `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.ALL_TOKENS_BIGMAP}/values?limit=100`
     );
     const tokenData = tokenResponse.data[id].value;
     const tokenOnSaleResponse = await axios.get(
-      `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.TOKENS_FOR_SALE_BIGMAP}/values`
+      `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.TOKENS_FOR_SALE_BIGMAP}/values?limit=100`
     );
     let tokenOnSaleData = { sale: {} };
     const onSale = tokenOnSaleResponse.data.filter((item) => item.key === id);
     if (onSale.length) tokenOnSaleData.sale = onSale[0].value;
     const playerId = tokenResponse.data[id].value.player_id;
     const response = await axios.get(
-      `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.ALL_PLAYERS_BIGMAP}/values`
+      `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.ALL_PLAYERS_BIGMAP}/values?limit=100`
     );
     const name = response.data[playerId].value.name;
     const player = await Player.findOne({ name: name });
@@ -34,7 +34,7 @@ router.get("/tokens/tokendetails/:id", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message[0]);
   }
 });
 
@@ -48,7 +48,7 @@ router.get("/tokens/:id", async (req, res) => {
     const bigmap = response.data;
     res.status(200).send(bigmap[id]);
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message);
   }
 });
 
@@ -62,7 +62,7 @@ router.get("/players/:id", async (req, res) => {
     const bigmap = response.data;
     res.status(200).send(bigmap[id]);
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message);
   }
 });
 
@@ -73,13 +73,14 @@ router.get("/owned/:address", isAuthenticated, async (req, res) => {
     const response = await axios.get(
       `https://api.carthagenet.tzstats.com/explorer/bigmap/${process.env.LEDGER_BIGMAP}/values`
     );
+
     const bigmap = response.data;
     const owned = bigmap.filter((item) => item.key === address);
     if (!owned.length) res.status(200).send("No Tokens");
     const ownedTokens = owned[0].value["0@set"];
     res.status(200).send(ownedTokens);
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message);
   }
 });
 
@@ -92,7 +93,7 @@ router.get("/tokens", async (req, res) => {
     const bigmap = response.data;
     res.status(200).send(bigmap);
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message);
   }
 });
 
@@ -105,7 +106,7 @@ router.get("/players", async (req, res) => {
     const bigmap = response.data;
     res.status(200).send(bigmap);
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message);
   }
 });
 
@@ -118,7 +119,7 @@ router.get("/tokensforsale", async (req, res) => {
     const bigmap = response.data;
     res.status(200).send(bigmap);
   } catch (error) {
-    res.status(400).send(error.message[0]);
+    res.status(error.status).send(error.message);
   }
 });
 // GET ALL TOKENS FOR SALE ALONG WITH PLAYER DETAILS & FULL METADATA

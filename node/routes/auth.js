@@ -6,7 +6,6 @@ const jwt = require("jsonwebtoken");
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ google_id: req.body.googleId });
-
     if (user) {
       const payload = {
         name: user.name,
@@ -49,9 +48,8 @@ router.post("/login", async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
     return res.status(404).json({
-      error: error,
+      error: true,
       msg: "Try Again",
     });
   }

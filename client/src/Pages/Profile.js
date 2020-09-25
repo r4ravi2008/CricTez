@@ -8,14 +8,6 @@ import { SET_NAVBAR_HEADING } from "../context/types";
 function Profile() {
   const [state, dispatch] = useAuthContext();
 
-  useEffect(() => {
-    dispatch({
-      type: SET_NAVBAR_HEADING,
-      payload: {
-        heading: "Profile",
-      },
-    });
-  }, []);
   const [showA, setShowA] = useState(true);
 
   const toggleShowA = () => setShowA(!showA);
@@ -36,8 +28,6 @@ function Profile() {
               src={require("../assests/tez-logo.png")}
             />
           </div>
-          <h4 className="text-muted">Owned Tokens</h4>
-          <h1 className="profile-address">20</h1>
         </div>
       </Container>
     </RouteTransition>

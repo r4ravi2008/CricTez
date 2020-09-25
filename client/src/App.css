@@ -20,3 +20,15 @@ body {
   padding: 2rem 1rem;
   border-radius: 50px;
 }
+.color-accent {
+  color: var(--accent-color);
+}
+.suspense-loading {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  color: var(--background-color-dark);
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+}

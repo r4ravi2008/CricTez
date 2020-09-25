@@ -16,6 +16,7 @@ app.use(cors());
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static('public'))
 
 app.use("/api/auth", authRoute);
 app.use("/api/players", playersRoute);

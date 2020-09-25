@@ -130,9 +130,12 @@ const scrapeData = async (url) => {
   await browser.close();
   return data;
 };
-
+let count = 0;
 const storeData = async (url) => {
   const storageData = await scrapeData(url);
+  count++;
+  console.log(storageData.player_id);
+  console.log(count);
   const data = await axios
     .post("http://localhost:4000/api/players/newplayer", { ...storageData })
     .then(function (response) {

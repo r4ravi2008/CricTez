@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import React from "react";
 import "./PageHeading.css";
 
-function PageHeading({ text }) {
+function PageHeading({ text, children }) {
   const variantsUp = {
     initial: { opacity: 0, y: "-100%" },
     final: { opacity: 1, y: 0, transition: { duration: 0.5, type: "tween" } },
@@ -35,6 +35,7 @@ function PageHeading({ text }) {
         </motion.h1>
       </div>
       <br />
+      {children}
       <hr />
       <br />
     </div>

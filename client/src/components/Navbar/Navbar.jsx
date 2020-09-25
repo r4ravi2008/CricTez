@@ -2,7 +2,7 @@ import { ThanosWallet } from "@thanos-wallet/dapp";
 import React from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { FaBell, FaSignOutAlt, FaRedoAlt } from "react-icons/fa";
+import { FaBell, FaRedoAlt, FaSignOutAlt } from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
 import { contractAddress } from "../../constants/contract";
 import { useAuthContext } from "../../context/auth/authContext";
@@ -11,12 +11,12 @@ import {
   SET_CONTRACT,
   SET_WALLET_ADDRESS,
   SET_WALLET_BALANCE,
-  WALLET_CONNECTED,
+  WALLET_CONNECTED
 } from "../../context/types";
 import "./Navbar.css";
 
 export default function MainNavbar() {
-  const [, dispatch] = useAuthContext();
+  const [state, dispatch] = useAuthContext();
 
   const checkWalletConfigurable = async () => {
     let wallet, tezos, dapp, accountBalance;
@@ -55,6 +55,7 @@ export default function MainNavbar() {
     } catch (e) {
       alert(e, "Error");
     }
+    console.log(state);
   };
 
   const logout = () => {

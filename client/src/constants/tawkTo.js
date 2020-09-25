@@ -1,0 +1,1 @@
+export const tawkToPropertyId = "5f6cb0ee4704467e89f1fe89"

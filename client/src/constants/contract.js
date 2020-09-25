@@ -1,4 +1,4 @@
-export const contractAddress = "KT1PeyfZQ5uHyzXzx83t9WGKHk6pKmvcWvLC";
+export const contractAddress = "KT1TR7VLMdWCEWT26d6pAEh4WKoaEiPBJ5W2";
 export const ledgerBigmap = "17719";
 export const operatorsBigmap = "17720";
 export const playersBigmap = "17721";
