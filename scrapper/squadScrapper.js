@@ -16,7 +16,9 @@ let scrapeSquad = async (url) => {
     }
     return all_players;
   });
-  playerUrls.forEach(async (url) => await storeData(url));
+  playerUrls.forEach((url) =>
+    storeData(url).then((res) => console.log("Success"))
+  );
   await browser.close();
 };
 

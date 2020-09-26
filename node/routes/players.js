@@ -66,16 +66,24 @@ router.get("/playerdetails/:id", async (req, res) => {
 
 // ADD NEW PLAYER
 router.post("/newplayer/", async (req, res) => {
-  const result = validatePlayer(req.body);
-  if (result.error) {
+  const result = false;
+  if (result) {
     res.status(422).send(result.error.details[0].message);
   } else {
     try {
+      const existsPlayer = await Player.findOne({
+        player_id: req.body.player_id,
+      });
+      if (existsPlayer) {
+        const temp1 = await existsPlayer.updateOne(req.body);
+        res.status(200).send(temp1);
+        return;
+      }
       const player = new Player(req.body);
       const temp = await player.save();
       res.status(200).send(temp);
     } catch (error) {
-      console.log(error);
+      console.log("Failed");
       res.status(res.status).send(error.message);
     }
   }
