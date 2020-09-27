@@ -147,7 +147,7 @@ const storeData = async (url) => {
   console.log(storageData.player_id);
   console.log(count);
   const data = await axios
-    .post("http://localhost:4000/api/players/newplayer", { ...storageData })
+    .post("https://crictez-api.herokuapp.com/api/players/newplayer", { ...storageData })
     .then(function (response) {
       console.log(response.status);
     })

@@ -67,4 +67,4 @@ const updateData = async (data) => {
   console.log(totalPlayersUpdated);
 };
 
-scrapePlayerPoints("https://www.iplt20.com/stats/2020/player-points");
+module.exports = { scrapePlayerPoints };

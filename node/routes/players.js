@@ -7,6 +7,7 @@ const {
   shortPlayer,
   playerPoints,
 } = require("../models/player");
+const { scrapePlayerPoints } = require("../util/updatePoints");
 
 // GET ALL PLAYERS
 router.get("/", async (req, res) => {
@@ -142,14 +143,29 @@ router.post("/name/", async (req, res) => {
 //GET ALL PLAYERS WITH ID, RANK, POINTS
 router.get("/getplayerpoints/all", async (req, res) => {
   try {
-    const player = await Player.find().select(playerPoints);
-    if (player === null) {
+    let players = await Player.find().select(playerPoints);
+    players = players.filter(
+      (player) => player.rank !== null && player.points !== null
+    );
+
+    if (players === null) {
       res.status(404).send("Request Failed");
     } else {
-      res.status(200).send(player);
+      res.status(200).send(players);
     }
   } catch (error) {
-    res.status(error.status).send(error.message[0]);
+    res.status(res.status).send(error.message);
+  }
+});
+
+router.get("/scrape-player-points/all", async (req, res) => {
+  try {
+    const response = scrapePlayerPoints(
+      "https://www.iplt20.com/stats/2020/player-points"
+    );
+    res.send(response.data);
+  } catch (error) {
+    res.status(res.status).send(error.message);
   }
 });
 
