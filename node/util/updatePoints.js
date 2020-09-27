@@ -4,7 +4,7 @@ const axios = require("axios");
 let totalPlayersUpdated = 0;
 
 const scrapePlayerPoints = async (url) => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
   const page = await browser.newPage();
   await page.goto(url);
   const data = await page.evaluate(() => {

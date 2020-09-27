@@ -76,7 +76,7 @@ router.get("/owned/:address", isAuthenticated, async (req, res) => {
 
     const bigmap = response.data;
     const owned = bigmap.filter((item) => item.key === address);
-    if (!owned.length) res.status(200).send("No Tokens");
+    if (!owned.length) res.status(200).send([]);
     const ownedTokens = owned[0].value["0@set"];
     res.status(200).send(ownedTokens);
   } catch (error) {
