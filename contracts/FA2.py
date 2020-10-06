@@ -1,10 +1,3 @@
-# Meta-Programming Configuration
-##
-# The `FA2_config` class holds the meta-programming configuration.
-##
-# See the FA2 standard definition:
-# <https://gitlab.com/tzip/tzip/-/blob/master/proposals/tzip-12/>
-##
 
 import smartpy as sp
 
@@ -13,12 +6,12 @@ class FA2_config:
     def __init__(self,
                  debug_mode=False,
                  single_asset=False,
-                 non_fungible=False,
+                 non_fungible=True,
                  add_mutez_transfer=False,
                  readable=True,
                  force_layouts=True,
                  support_operator=True,
-                 assume_consecutive_token_ids=True,
+                 assume_consecutive_token_ids=False,
                  add_permissions_descriptor=False,
                  lazy_entry_points=False,
                  lazy_entry_points_multiple=False
@@ -122,6 +115,7 @@ class FA2_config:
 # important types.
 ##
 token_id_type = sp.TNat
+player_id_type = sp.TNat
 
 
 class Error_message:
@@ -160,15 +154,14 @@ class Batch_transfer:
 
     def get_transfer_type(self):
         tx_type = sp.TRecord(to_=sp.TAddress,
-                             token_id=token_id_type,
-                             amount=sp.TNat)
+                             token_id=token_id_type)
         if self.config.force_layouts:
             tx_type = tx_type.layout(
-                ("to_", ("token_id", "amount"))
+                ("to_", "token_id")
             )
         transfer_type = sp.TRecord(from_=sp.TAddress,
                                    txs=sp.TList(tx_type)).layout(
-                                       ("from_", "txs"))
+            ("from_", "txs"))
         return transfer_type
 
     def get_type(self):
@@ -210,11 +203,11 @@ class Ledger_key:
 
     def make(self, user, token):
         user = sp.set_type_expr(user, sp.TAddress)
-        token = sp.set_type_expr(token, token_id_type)
+        # token = sp.set_type_expr(token, token_id_type)
         if self.config.single_asset:
             result = user
         else:
-            result = sp.pair(user, token)
+            result = user
         if self.config.readable:
             return result
         else:
@@ -227,10 +220,10 @@ class Ledger_key:
 
 class Ledger_value:
     def get_type():
-        return sp.TRecord(balance=sp.TNat)
+        return sp.TRecord(tokens=sp.TSet(t=sp.TNat))
 
-    def make(balance):
-        return sp.record(balance=balance)
+    def make(token):
+        return sp.record(tokens=sp.set([token]))
 
 # The link between operators and the addresses they operate is kept
 # in a *lazy set* of `(owner × operator)` values.
@@ -274,25 +267,6 @@ class Operator_set:
         return set.contains(self.make_key(owner, operator))
 
 
-class Balance_of:
-    def request_type():
-        return sp.TRecord(
-            owner=sp.TAddress,
-            token_id=token_id_type).layout(("owner", "token_id"))
-
-    def response_type():
-        return sp.TList(
-            sp.TRecord(
-                request=Balance_of.request_type(),
-                balance=sp.TNat).layout(("request", "balance")))
-
-    def entry_point_type():
-        return sp.TRecord(
-            callback=sp.TContract(Balance_of.response_type()),
-            requests=sp.TList(Balance_of.request_type())
-        ).layout(("requests", "callback"))
-
-
 class Token_meta_data:
     def __init__(self, config):
         self.config = config
@@ -300,16 +274,16 @@ class Token_meta_data:
     def get_type(self):
         t = sp.TRecord(
             token_id=token_id_type,
-            symbol=sp.TString,
-            name=sp.TString,
-            decimals=sp.TNat,
+            card_score=sp.TNat,
+            inMatch=sp.TBool,
+            player_id=sp.TNat,
             extras=sp.TMap(sp.TString, sp.TString)
         )
         if self.config.force_layouts:
             t = t.layout(("token_id",
-                          ("symbol",
-                           ("name",
-                            ("decimals", "extras")))))
+                          ("card_score",
+                           ("inMatch",
+                            ("player_id", "extras")))))
         return t
 
     def set_type_and_layout(self, expr):
@@ -317,6 +291,52 @@ class Token_meta_data:
 
     def request_type(self):
         return token_id_type
+
+
+class Player_meta_data:
+    def __init__(self, config):
+        self.config = config
+
+    def get_type(self):
+        t = sp.TRecord(
+            player_id=player_id_type,
+
+            name=sp.TString,
+            extras=sp.TMap(sp.TString, sp.TString)
+        )
+        if self.config.force_layouts:
+            t = t.layout(("player_id", ("name")))
+        return t
+
+    def set_type_and_layout(self, expr):
+        sp.set_type(expr, self.get_type())
+
+    def request_type(self):
+        return player_id_type
+
+
+class Player_id_set:
+    def __init__(self, config):
+        self.config = config
+
+    def empty(self):
+        if self.config.assume_consecutive_token_ids:
+            # The "set" is its cardinal.
+            return sp.nat(0)
+        else:
+            return sp.set(t=player_id_type)
+
+    def add(self, metaset, v):
+        if self.config.assume_consecutive_token_ids:
+            metaset.set(sp.max(metaset, v + 1))
+        else:
+            metaset.add(v)
+
+    def contains(self, metaset, v):
+        if self.config.assume_consecutive_token_ids:
+            return (v < metaset)
+        else:
+            metaset.contains(v)
 
 
 class Permissions_descriptor:
@@ -443,6 +463,9 @@ class FA2(sp.Contract):
         self.token_meta_data = Token_meta_data(self.config)
         self.permissions_descriptor_ = Permissions_descriptor(self.config)
         self.batch_transfer = Batch_transfer(self.config)
+        self.player_meta_data = Player_meta_data(self.config)
+        self.player_id_set = Player_id_set(self.config)
+
         if self.config.add_mutez_transfer:
             self.transfer_mutez = sp.entry_point(mutez_transfer)
         if self.config.add_permissions_descriptor:
@@ -465,8 +488,31 @@ class FA2(sp.Contract):
             operators=self.operator_set.make(),
             administrator=admin,
             all_tokens=self.token_id_set.empty(),
-            metadata_string=sp.unit
+            players=self.config.my_map(
+                tkey=sp.TNat, tvalue=self.player_meta_data.get_type()),
+            tokens_on_sale=sp.big_map(tkey=sp.TNat, tvalue=sp.TRecord(
+                owner=sp.TAddress, price=sp.TMutez)),
+            selected_tokens=sp.map(
+                tkey=sp.TAddress, tvalue=sp.TRecord(tokens=sp.TSet(sp.TNat))),
+            matches=sp.map(tkey=sp.TNat, tvalue=sp.TRecord(
+                teamA=sp.TString, teamB=sp.TString, active=sp.TBool, finished=sp.TBool, date=sp.TString, compete=sp.TBool)),
+            playerPoints=sp.map(tkey=sp.TNat, tvalue=sp.TRecord(
+                points=sp.TNat, rank=sp.TNat)),
+            keysset=sp.set([admin]),
         )
+
+    @sp.entry_point
+    def feedData(self, params):
+        sp.verify(self.data.keysset.contains(
+            sp.sender), message="Only Contract Owner can feed Data.")
+        sp.for player in params.array:
+            self.data.playerPoints[player.player_id] = sp.record(
+                points=player.points, rank=player.rank)
+
+    @sp.entry_point
+    def addDataContributor(self, params):
+        sp.if sp.sender == self.data.administrator:
+            self.data.keysset.add(params.contributor)
 
     @sp.entry_point
     def set_pause(self, params):
@@ -485,25 +531,27 @@ class FA2(sp.Contract):
         if self.config.single_asset:
             sp.verify(params.token_id == 0, "single-asset: token-id <> 0")
         if self.config.non_fungible:
-            sp.verify(params.amount == 1, "NFT-asset: amount <> 1")
+            # sp.verify(params.amount == 1, "NFT-asset: amount <> 1")
             sp.verify(~ self.token_id_set.contains(self.data.all_tokens,
                                                    params.token_id),
                       "NFT-asset: cannot mint twice same token")
+        sp.verify(self.data.players.contains(
+            params.player_id), "Invalid Player ID")
         user = self.ledger_key.make(params.address, params.token_id)
         self.token_id_set.add(self.data.all_tokens, params.token_id)
         sp.if self.data.ledger.contains(user):
-            self.data.ledger[user].balance += params.amount
+            self.data.ledger[user].tokens.add(params.token_id)
         sp.else:
-            self.data.ledger[user] = Ledger_value.make(params.amount)
+            self.data.ledger[user] = Ledger_value.make(params.token_id)
         sp.if self.data.tokens.contains(params.token_id):
             pass
         sp.else:
             self.data.tokens[params.token_id] = sp.record(
                 token_id=params.token_id,
-                symbol=params.symbol,
-                name="",  # Consered useless here
-                decimals=0,
-                extras=sp.map()
+                player_id=params.player_id,
+                card_score=100,
+                extras=sp.map(),
+                inMatch=False
             )
 
     @sp.entry_point
@@ -532,51 +580,19 @@ class FA2(sp.Contract):
                 sp.verify(self.data.tokens.contains(tx.token_id),
                           message=self.error_message.token_undefined())
                 # If amount is 0 we do nothing now:
-                sp.if (tx.amount > 0):
-                    from_user = self.ledger_key.make(current_from, tx.token_id)
-                    sp.verify(
-                        (self.data.ledger[from_user].balance >= tx.amount),
-                        message=self.error_message.insufficient_balance())
-                    to_user = self.ledger_key.make(tx.to_, tx.token_id)
-                    self.data.ledger[from_user].balance = sp.as_nat(
-                        self.data.ledger[from_user].balance - tx.amount)
-                    sp.if self.data.ledger.contains(to_user):
-                        self.data.ledger[to_user].balance += tx.amount
-                    sp.else:
-                        self.data.ledger[to_user] = Ledger_value.make(
-                            tx.amount)
+                from_user = self.ledger_key.make(current_from, tx.token_id)
+                sp.verify(
+                    self.data.ledger[from_user].tokens.contains(tx.token_id),
+                    message=self.error_message.insufficient_balance())
+                to_user = self.ledger_key.make(tx.to_, tx.token_id)
+                # self.data.ledger[from_user].balance = sp.as_nat(
+                #     self.data.ledger[from_user].balance - tx.amount)
+                self.data.ledger[from_user].tokens.remove(tx.token_id)
+                sp.if self.data.ledger.contains(to_user):
+                    self.data.ledger[to_user].tokens.add(tx.token_id)
                 sp.else:
-                    pass
-
-    @sp.entry_point
-    def balance_of(self, params):
-        # paused may mean that balances are meaningless:
-        sp.verify(~self.data.paused)
-        sp.set_type(params, Balance_of.entry_point_type())
-
-        def f_process_request(req):
-            user = self.ledger_key.make(req.owner, req.token_id)
-            sp.verify(self.data.tokens.contains(req.token_id),
-                      message=self.error_message.token_undefined())
-            sp.if self.data.ledger.contains(user):
-                balance = self.data.ledger[user].balance
-                sp.result(
-                    sp.record(
-                        request=sp.record(
-                            owner=sp.set_type_expr(req.owner, sp.TAddress),
-                            token_id=sp.set_type_expr(req.token_id, sp.TNat)),
-                        balance=balance))
-            sp.else:
-                sp.result(
-                    sp.record(
-                        request=sp.record(
-                            owner=sp.set_type_expr(req.owner, sp.TAddress),
-                            token_id=sp.set_type_expr(req.token_id, sp.TNat)),
-                        balance=0))
-        res = sp.local("responses", params.requests.map(f_process_request))
-        destination = sp.set_type_expr(params.callback,
-                                       sp.TContract(Balance_of.response_type()))
-        sp.transfer(res.value, sp.mutez(0), destination)
+                    self.data.ledger[to_user] = Ledger_value.make(1)
+                    self.data.ledger[to_user].tokens.add(tx.token_id)
 
     @sp.entry_point
     def token_metadata_registry(self, params):
@@ -624,6 +640,146 @@ class FA2(sp.Contract):
         else:
             sp.failwith(self.error_message.operators_unsupported())
 
+    # Add Players
+    @sp.entry_point
+    def addPlayer(self, params):
+        sp.verify(sp.sender == self.data.administrator)
+        # We don't check for pauseness because we're the admin.
+        sp.if self.data.players.contains(params.player_id):
+            pass
+        sp.else:
+            self.data.players[params.player_id] = sp.record(
+                player_id=params.player_id,
+                name=params.name,
+                extras=sp.map()
+            )
+
+    @sp.entry_point
+    def sellToken(self, params):
+        sp.verify(self.data.tokens.contains(
+            params.token_id), message="Invalid Token ID.")
+        sp.verify(self.data.ledger[sp.sender].tokens.contains(
+            params.token_id), message="Token Not Owned.")
+        sp.verify(self.data.tokens[params.token_id].inMatch == False,
+                  message="Cannot Sell a Active Token. Please wait until match finishes.")
+        sp.verify(~self.data.tokens_on_sale.contains(
+            params.token_id), message="Token is Already on Sale.")
+        sp.verify(params.price != sp.mutez(0),
+                  message="Please Enter a valid price.")
+        self.data.tokens_on_sale[params.token_id] = sp.record(
+            owner=sp.sender, price=params.price)
+
+    @sp.entry_point
+    def buyToken(self, params):
+        sp.verify(self.data.tokens.contains(
+            params.token_id), message="Invalid Token ID.")
+        sp.verify(self.data.tokens_on_sale.contains(
+            params.token_id), message="Token is not on Sale.")
+        tokenPrice = self.data.tokens_on_sale[params.token_id].price
+        tokenOwner = self.data.tokens_on_sale[params.token_id].owner
+        sp.verify(tokenOwner != sp.sender,
+                  message="Owner cannot buy already owned token.")
+        sp.verify(tokenPrice <= sp.amount,
+                  message="Pay proper amount for the token.")
+        sp.send(tokenOwner, tokenPrice)
+        self.data.ledger[tokenOwner].tokens.remove(params.token_id)
+        del self.data.tokens_on_sale[params.token_id]
+        sp.if self.data.ledger.contains(sp.sender):
+            self.data.ledger[sp.sender].tokens.add(params.token_id)
+        sp.else:
+            self.data.ledger[sp.sender] = Ledger_value.make(params.token_id)
+
+    @sp.entry_point
+    def unlistToken(self, params):
+        sp.verify(self.data.tokens.contains(
+            params.token_id), message="Invalid Token ID.")
+        sp.verify(self.data.tokens_on_sale.contains(
+            params.token_id), message="Token is not on Sale.")
+        tokenOwner = self.data.tokens_on_sale[params.token_id].owner
+        sp.verify(sp.sender == tokenOwner,
+                  message="Only Token Owner can unlist the token from marketplace.")
+        del self.data.tokens_on_sale[params.token_id]
+
+    @sp.entry_point
+    def addMatch(self, params):
+        sp.verify(sp.sender == self.data.administrator,
+                  message="Only Admin Can Start/End a Match.")
+        sp.verify(~self.data.matches.contains(params.match_id),
+                  message="Match Already Exists.")
+        self.data.matches[params.match_id] = sp.record(
+            teamA=params.teamA, teamB=params.teamB, active=False, date=params.date, finished=False, compete=False)
+
+    @sp.entry_point
+    def activateMatch(self, params):
+        sp.verify(sp.sender == self.data.administrator,
+                  message="Only Admin Can Start/End a Match.")
+        sp.verify(self.data.matches.contains(params.match_id),
+                  message="Match Does not exist.")
+        sp.verify(self.data.matches[params.match_id].active ==
+                  False, message="Match is already Active")
+        sp.verify(self.data.matches[params.match_id].finished ==
+                  False, message="Match is finished.")
+        sp.for match in self.data.matches.values():
+            sp.if match.active == True:
+                sp.failwith("Two Matches Cannot be Active at the same time")
+        self.data.matches[params.match_id].active = True
+        self.data.matches[params.match_id].compete = True
+
+    @sp.entry_point
+    def endCompete(self, params):
+        sp.verify(sp.sender == self.data.administrator,
+                  message="Only Admin Can Start/End a Match.")
+        sp.verify(self.data.matches.contains(params.match_id),
+                  message="Match Does not exist.")
+        sp.verify(self.data.matches[params.match_id].active ==
+                  True, message="Match is not active")
+        sp.verify(self.data.matches[params.match_id].finished ==
+                  False, message="Match is finished.")
+        self.data.matches[params.match_id].compete = False
+
+    @sp.entry_point
+    def endMatch(self, params):
+        # Call Oro Contratct which will return player-id -> points
+        sp.verify(sp.sender == self.data.administrator,
+                  message="Only Admin Can Start/End a Match.")
+        sp.verify(self.data.matches.contains(params.match_id),
+                  message="Match does not exists.")
+        sp.verify(self.data.matches[params.match_id].active ==
+                  True, message="Match is Not Active.")
+        sp.verify(self.data.matches[params.match_id].compete ==
+                  False, message="Compete not Ended.")
+        sp.for item in self.data.selected_tokens.items():
+            sp.for token_id in item.value.tokens.elements():
+                card = self.data.tokens[token_id]
+                player_id = card.player_id
+                sp.if self.data.playerPoints.contains(player_id):
+                    points = self.data.playerPoints[player_id].points
+                card.inMatch = False
+                card.card_score += (points * (card.card_score / 100))
+            del self.data.selected_tokens[item.key]
+        self.data.matches[params.match_id].active = False
+        self.data.matches[params.match_id].finished = True
+
+    @sp.entry_point
+    def selectTeam(self, params):
+        sp.verify(self.data.matches[params.match_id].compete == True,
+                  message="Compete not Yet Started.")
+        sp.verify(self.data.matches[params.match_id].active == True,
+                  message="Match either does not exists or is inacitve.")
+        sp.verify(sp.len(params.tokens) == 5,
+                  message="Only Five Tokens are Allowed.")
+        sp.verify(~self.data.selected_tokens.contains(sp.sender),
+                  message="You have already staked Cards for the match.")
+        self.data.selected_tokens[sp.sender] = sp.record(tokens=sp.set())
+        sp.for token_id in params.tokens:
+            token_id = sp.set_type_expr(token_id, sp.TNat)
+            sp.verify(self.data.ledger[sp.sender].tokens.contains(
+                token_id), message="You can only select owned tokens.")
+            sp.verify(~self.data.tokens_on_sale.contains(
+                token_id), message="Cannot Play with a token on Sale. Unlist the token to continue.")
+            self.data.tokens[token_id].inMatch = True
+            self.data.selected_tokens[sp.sender].tokens.add(token_id)
+
 
 # Tests
 ##
@@ -667,333 +823,330 @@ class View_consumer(sp.Contract):
         sp.else:
             self.data.operator_support = False
 
-# Generation of Test Scenarios
-##
-# Tests are also parametrized by the `FA2_config` object.
-# The best way to visualize them is to use the online IDE
-# (<https://www.smartpy.io/dev/>).
-
 
 def add_test(config, is_default=True):
     @sp.add_test(name=config.name, is_default=is_default)
     def test():
         scenario = sp.test_scenario()
-        scenario.h1("FA2 Contract Name: " + config.name)
+        scenario.h1("CricTez - FA2-NFT, MarketPlace & FantasyLeague")
         scenario.table_of_contents()
         # sp.test_account generates ED25519 key-pairs deterministically:
+
         admin = sp.test_account("Administrator")
         alice = sp.test_account("Alice")
         bob = sp.test_account("Robert")
+        u1 = sp.test_account("U1")
+        u2 = sp.test_account("U2")
+        u3 = sp.test_account("U3")
+        u4 = sp.test_account("U4")
+        u5 = sp.test_account("U5")
         # Let's display the accounts:
+
         scenario.h2("Accounts")
-        scenario.show([admin, alice, bob])
+        scenario.show([admin, alice, bob, u1, u2, u3, u4, u5])
         c1 = FA2(config, admin.address)
         scenario += c1
-        if config.non_fungible:
-            # TODO
-            return
-        scenario.h2("Initial Minting")
-        scenario.p("The administrator mints 100 token-0's to Alice.")
-        scenario += c1.mint(address=alice.address,
-                            amount=100,
-                            symbol='TK0',
-                            token_id=0).run(sender=admin)
-        scenario.h2("Transfers Alice -> Bob")
-        scenario += c1.transfer(
-            [
-                c1.batch_transfer.item(from_=alice.address,
-                                       txs=[
-                                           sp.record(to_=bob.address,
-                                                     amount=10,
-                                                     token_id=0)
-                                       ])
-            ]).run(sender=alice)
-        scenario.verify(
-            c1.data.ledger[c1.ledger_key.make(alice.address, 0)].balance == 90)
-        scenario.verify(
-            c1.data.ledger[c1.ledger_key.make(bob.address, 0)].balance == 10)
-        scenario += c1.transfer(
-            [
-                c1.batch_transfer.item(from_=alice.address,
-                                       txs=[
-                                           sp.record(to_=bob.address,
-                                                     amount=10,
-                                                     token_id=0),
-                                           sp.record(to_=bob.address,
-                                                     amount=11,
-                                                     token_id=0)
-                                       ])
-            ]).run(sender=alice)
-        scenario.verify(
-            c1.data.ledger[c1.ledger_key.make(alice.address, 0)].balance
-            == 90 - 10 - 11)
-        scenario.verify(
-            c1.data.ledger[c1.ledger_key.make(bob.address, 0)].balance
-            == 10 + 10 + 11)
-        if config.single_asset:
-            return
-        scenario.h2("More Token Types")
-        scenario += c1.mint(address=bob.address,
-                            amount=100,
-                            symbol='TK1',
-                            token_id=1).run(sender=admin)
-        scenario += c1.mint(address=bob.address,
-                            amount=200,
-                            symbol='TK2',
-                            token_id=2).run(sender=admin)
-        scenario.h3("Multi-token Transfer Bob -> Alice")
-        scenario += c1.transfer(
-            [
-                c1.batch_transfer.item(from_=bob.address,
-                                       txs=[
-                                           sp.record(to_=alice.address,
-                                                     amount=10,
-                                                     token_id=0),
-                                           sp.record(to_=alice.address,
-                                                     amount=10,
-                                                     token_id=1)]),
-                # We voluntarily test a different sub-batch:
-                c1.batch_transfer.item(from_=bob.address,
-                                       txs=[
-                                           sp.record(to_=alice.address,
-                                                     amount=10,
-                                                     token_id=2)])
-            ]).run(sender=bob)
-        scenario.h2("Other Basic Permission Tests")
-        scenario.h3("Bob cannot transfer Alice's tokens.")
-        scenario += c1.transfer(
-            [
-                c1.batch_transfer.item(from_=alice.address,
-                                       txs=[
-                                           sp.record(to_=bob.address,
-                                                     amount=10,
-                                                     token_id=0),
-                                           sp.record(to_=bob.address,
-                                                     amount=1,
-                                                     token_id=0)])
-            ]).run(sender=bob, valid=False)
-        scenario.h3("Admin can transfer anything.")
-        scenario += c1.transfer(
-            [
-                c1.batch_transfer.item(from_=alice.address,
-                                       txs=[
-                                           sp.record(to_=bob.address,
-                                                     amount=10,
-                                                     token_id=0),
-                                           sp.record(to_=bob.address,
-                                                     amount=10,
-                                                     token_id=1)]),
-                c1.batch_transfer.item(from_=bob.address,
-                                       txs=[
-                                           sp.record(to_=alice.address,
-                                                     amount=11,
-                                                     token_id=0)])
-            ]).run(sender=admin)
-        scenario.h3("Even Admin cannot transfer too much.")
-        scenario += c1.transfer(
-            [
-                c1.batch_transfer.item(from_=alice.address,
-                                       txs=[
-                                           sp.record(to_=bob.address,
-                                                     amount=1000,
-                                                     token_id=0)])
-            ]).run(sender=admin, valid=False)
-        scenario.h3("Consumer Contract for Callback Calls.")
-        consumer = View_consumer(c1)
-        scenario += consumer
-        scenario.p("Consumer virtual address: "
-                   + sp.contract_address(consumer).export())
-        scenario.h2("Balance-of.")
 
-        def arguments_for_balance_of(receiver, reqs):
-            return (sp.record(
-                callback=sp.contract(
-                    Balance_of.response_type(),
-                    sp.contract_address(receiver),
-                    entry_point="receive_balances").open_some(),
-                requests=reqs))
-        scenario += c1.balance_of(arguments_for_balance_of(consumer, [
-            sp.record(owner=alice.address, token_id=0),
-            sp.record(owner=alice.address, token_id=1),
-            sp.record(owner=alice.address, token_id=2)
-        ]))
-        scenario.verify(consumer.data.last_sum == 90)
-        scenario.h2("Token Metadata.")
-        scenario.p("The view-receiver does the verification that the address"
-                   + "received is the one of the FA2 contract.")
-        scenario += c1.token_metadata_registry(
-            sp.contract(
-                sp.TAddress,
-                sp.contract_address(consumer),
-                entry_point="receive_metadata_registry").open_some())
+        scenario.h2("Player Tokens")
+        scenario.h4("Add Player")
+        scenario.p("The administrator adds Virat Kohli")
+        scenario += c1.addPlayer(address=admin.address,
+                                 amount=1,
+                                 player_id=0,
+                                 name='Virat Kohli',
+                                 ).run(sender=admin)
+        scenario.p("The administrator adds MS Dhoni")
+        scenario += c1.addPlayer(address=admin.address,
+                                 amount=1,
+                                 player_id=1,
+                                 name='MS Dhoni',
+                                 ).run(sender=admin)
+        scenario.p("The administrator adds Rohit Sharma")
+        scenario += c1.addPlayer(address=admin.address,
+                                 amount=1,
+                                 player_id=2,
+                                 name='Rohit Sharma',
+                                 ).run(sender=admin)
+        scenario.p("The administrator adds NEW Player")
+        scenario += c1.addPlayer(address=admin.address,
+                                 amount=1,
+                                 player_id=23335,
+                                 name='Shubham Kukreja',
+                                 ).run(sender=admin)
+        scenario.h4("Mint Tokens")
+        scenario.p("The administrator mints Virat Kohli's token to User1.")
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=0
+                            ).run(sender=admin)
+        scenario.p("The administrator mints MS Dhoni's token to User1.")
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=1,
+                            token_id=1
+                            ).run(sender=admin)
+        scenario.p("The administrator mints Virat Kohli's token to User1.")
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=2,
+                            token_id=2
+                            ).run(sender=admin)
+        scenario.p("The administrator mints Virat Kohli's token to User2.")
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=3
+                            ).run(sender=admin)
+        scenario.p("The administrator mints Virat Kohli's token to User2.")
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=4
+                            ).run(sender=admin)
 
-        def check_metadata_list(l):
-            res = sp.local("toks", sp.string(""))
-            sp.for md in l:
-                res.value = sp.concat([md.symbol, res.value])
-                sp.verify((md.symbol == "TK0") | (md.symbol == "TK1"))
-            sp.verify(res.value == "TK1TK0")
-        scenario += c1.token_metadata(
-            sp.record(
-                token_ids=[0, 1],
-                handler=check_metadata_list
-            ))
-        scenario.h2("Operators")
-        if not c1.config.support_operator:
-            scenario.h3("This version was compiled with no operator support")
-            scenario.p("Calls should fail even for the administrator:")
-            scenario += c1.update_operators([]).run(sender=admin, valid=False)
-            if config.add_permissions_descriptor:
-                scenario += c1.permissions_descriptor(
-                    sp.contract(
-                        c1.permissions_descriptor_.get_type(),
-                        sp.contract_address(consumer),
-                        entry_point="receive_permissions_descriptor"
-                    ).open_some())
-                scenario.verify(consumer.data.operator_support == False)
-        else:
-            scenario.p("This version was compiled with operator support.")
-            scenario.p("Calling 0 updates should work:")
-            scenario += c1.update_operators([]).run()
-            scenario.h3("Operator Accounts")
-            op0 = sp.test_account("Operator0")
-            op1 = sp.test_account("Operator1")
-            op2 = sp.test_account("Operator2")
-            scenario.show([op0, op1, op2])
-            scenario.p("Admin can change Alice's operator.")
-            scenario += c1.update_operators([
-                sp.variant("add_operator", c1.operator_param.make(
-                    owner=alice.address,
-                    operator=op1.address))
-            ]).run(sender=admin)
-            scenario.p("Operator1 can now transfer Alice's tokens")
-            scenario += c1.transfer(
-                [
-                    c1.batch_transfer.item(from_=alice.address,
-                                           txs=[
-                                               sp.record(to_=bob.address,
-                                                         amount=2,
-                                                         token_id=0),
-                                               sp.record(to_=op1.address,
-                                                         amount=2,
-                                                         token_id=2)])
-                ]).run(sender=op1)
-            scenario.p("Operator1 cannot transfer Bob's tokens")
-            scenario += c1.transfer(
-                [
-                    c1.batch_transfer.item(from_=bob.address,
-                                           txs=[
-                                               sp.record(to_=op1.address,
-                                                         amount=2,
-                                                         token_id=1)])
-                ]).run(sender=op1, valid=False)
-            scenario.p("Operator2 cannot transfer Alice's tokens")
-            scenario += c1.transfer(
-                [
-                    c1.batch_transfer.item(from_=alice.address,
-                                           txs=[
-                                               sp.record(to_=bob.address,
-                                                         amount=2,
-                                                         token_id=1)])
-                ]).run(sender=op2, valid=False)
-            scenario.p("Alice can remove their operator")
-            scenario += c1.update_operators([
-                sp.variant("remove_operator", c1.operator_param.make(
-                    owner=alice.address,
-                    operator=op1.address))
-            ]).run(sender=alice)
-            scenario.p("Operator1 cannot transfer Alice's tokens any more")
-            scenario += c1.transfer(
-                [
-                    c1.batch_transfer.item(from_=alice.address,
-                                           txs=[
-                                               sp.record(to_=op1.address,
-                                                         amount=2,
-                                                         token_id=1)])
-                ]).run(sender=op1, valid=False)
-            scenario.p("Bob can add Operator0.")
-            scenario += c1.update_operators([
-                sp.variant("add_operator", c1.operator_param.make(
-                    owner=bob.address,
-                    operator=op0.address
-                ))
-            ]).run(sender=bob)
-            scenario.p("Operator0 can transfer Bob's tokens '0' and '1'")
-            scenario += c1.transfer(
-                [
-                    c1.batch_transfer.item(from_=bob.address,
-                                           txs=[
-                                               sp.record(to_=alice.address,
-                                                         amount=1,
-                                                         token_id=0)]),
-                    c1.batch_transfer.item(from_=bob.address,
-                                           txs=[
-                                               sp.record(to_=alice.address,
-                                                         amount=1,
-                                                         token_id=1)])
-                ]).run(sender=op0)
-            scenario.p("Bob cannot add Operator0 for Alice's tokens.")
-            scenario += c1.update_operators([
-                sp.variant("add_operator", c1.operator_param.make(
-                    owner=alice.address,
-                    operator=op0.address
-                ))
-            ]).run(sender=bob, valid=False)
-            scenario.p("Alice can also add Operator0 for themselves.")
-            scenario += c1.update_operators([
-                sp.variant("add_operator", c1.operator_param.make(
-                    owner=alice.address,
-                    operator=op0.address
-                ))
-            ]).run(sender=alice, valid=True)
-            scenario.p("Operator0 can now transfer Bob's and Alice's tokens.")
-            scenario += c1.transfer(
-                [
-                    c1.batch_transfer.item(from_=bob.address,
-                                           txs=[
-                                               sp.record(to_=alice.address,
-                                                         amount=1,
-                                                         token_id=0)]),
-                    c1.batch_transfer.item(from_=alice.address,
-                                           txs=[
-                                               sp.record(to_=bob.address,
-                                                         amount=1,
-                                                         token_id=1)])
-                ]).run(sender=op0)
-            scenario.p("Bob adds Operator2 as second operator.")
-            scenario += c1.update_operators([
-                sp.variant("add_operator", c1.operator_param.make(
-                    owner=bob.address,
-                    operator=op2.address
-                ))
-            ]).run(sender=bob, valid=True)
-            scenario.p("Operator0 and Operator2 can transfer Bob's tokens.")
-            scenario += c1.transfer(
-                [
-                    c1.batch_transfer.item(from_=bob.address,
-                                           txs=[
-                                               sp.record(to_=alice.address,
-                                                         amount=1,
-                                                         token_id=0)])
-                ]).run(sender=op0)
-            scenario += c1.transfer(
-                [
-                    c1.batch_transfer.item(from_=bob.address,
-                                           txs=[
-                                               sp.record(to_=alice.address,
-                                                         amount=1,
-                                                         token_id=0)])
-                ]).run(sender=op2)
-            if config.add_permissions_descriptor:
-                scenario.h3("Testing permissions_descriptor")
-                scenario.verify(consumer.data.operator_support == False)
-                scenario += c1.permissions_descriptor(
-                    sp.contract(
-                        c1.permissions_descriptor_.get_type(),
-                        sp.contract_address(consumer),
-                        entry_point="receive_permissions_descriptor").open_some())
-                scenario.verify(consumer.data.operator_support == True)
-            scenario.table_of_contents()
+        scenario.h4("Transfer Tokens")
+        scenario.p("User1 Transfers Token 1 to User2.")
+        scenario += c1.transfer(
+            [
+                c1.batch_transfer.item(from_=u1.address,
+                                       txs=[
+                                           sp.record(to_=u2.address,
+                                                     token_id=1)
+                                       ])
+            ]).run(sender=u1)
+        scenario.p("User1 Transfers Token 3 (not owned by 1) to User3. Must Fail")
+        scenario += c1.transfer(
+            [
+                c1.batch_transfer.item(from_=u1.address,
+                                       txs=[
+                                           sp.record(to_=u2.address,
+                                                     token_id=3)
+                                       ])
+            ]).run(sender=u1, valid=False)
+        scenario.p("User2 Transfers Token 1 to User3.")
+        scenario += c1.transfer(
+            [
+                c1.batch_transfer.item(from_=u2.address,
+                                       txs=[
+                                           sp.record(to_=u3.address,
+                                                     token_id=1)
+                                       ])
+            ]).run(sender=u2)
+        scenario.p("User1 Transfers Token 0 & 2 to User3.")
+        scenario += c1.transfer(
+            [
+                c1.batch_transfer.item(from_=u1.address,
+                                       txs=[
+                                           sp.record(to_=u3.address,
+                                                     token_id=0),
+                                           sp.record(to_=u3.address,
+                                                     token_id=2)
+                                       ])
+            ]).run(sender=u1)
+
+        scenario.h2("MaketPlace")
+        scenario.h4("Sell Tokens")
+        scenario.p("User 3 Puts Token-0 for sale.")
+        scenario += c1.sellToken(token_id=1, price=sp.mutez(1)).run(sender=u3)
+        scenario.p("User 2 Puts Token-3 for sale.")
+        scenario += c1.sellToken(token_id=3, price=sp.mutez(1)).run(sender=u2)
+        scenario.p(
+            "User 3 Puts Token-0 for sale, which is already on sale. Must Fail.")
+        scenario += c1.sellToken(token_id=0, price=sp.mutez(1)
+                                 ).run(sender=u3, valid=False)
+        scenario.p(
+            "User 2 Puts Token-1 for sale, which is not owned by User2. Must Fail.")
+        scenario += c1.sellToken(token_id=1, price=sp.mutez(1)
+                                 ).run(sender=u2, valid=False)
+        scenario.p(
+            "User 2 Puts Token-12 for sale, which does not exist. Must Fail.")
+        scenario += c1.sellToken(token_id=12,
+                                 price=sp.mutez(1)).run(sender=u2, valid=False)
+        scenario.p("User 2 Puts Token-3 for sale for 0xtz. Must Fail.")
+        scenario += c1.sellToken(token_id=3, price=sp.mutez(0)
+                                 ).run(sender=u2, valid=False)
+
+        scenario.h4("Unlist Tokens")
+        scenario.p(
+            "User 2 Unlists Token-0 (not owned) from marketplace. Must Fail.")
+        scenario += c1.unlistToken(token_id=0).run(sender=u2, valid=False)
+        scenario.p("User 3 Unlists Token-0 from marketplace.")
+        scenario += c1.unlistToken(token_id=0).run(sender=u3)
+
+        scenario.p(
+            "User 3 Puts Token-0 for sale, which is already on sale. Must Fail.")
+        scenario.h4("Buy Tokens")
+        scenario.p(
+            "User 1 Buys Token-0 form User3 wihout pariny proper amount. Must Fail.")
+        scenario += c1.buyToken(token_id=0).run(sender=u1,
+                                                amount=sp.mutez(0), valid=False)
+        scenario.p("User 1 Tries to buy Token-3 an unlisted Token. Must Fail.")
+        scenario += c1.buyToken(token_id=4).run(sender=u1,
+                                                amount=sp.mutez(1), valid=False)
+        scenario.p("User 3 Tries to buy already owned token. Must Fail.")
+        scenario += c1.buyToken(token_id=0).run(sender=u3,
+                                                amount=sp.mutez(1), valid=False)
+        scenario.p("User 1 Buys Token-3 form User2.")
+        scenario += c1.buyToken(token_id=3).run(sender=u1, amount=sp.mutez(1))
+        scenario += c1.transfer(
+            [
+                c1.batch_transfer.item(from_=u2.address,
+                                       txs=[
+                                           sp.record(to_=u3.address,
+                                                     token_id=4)
+                                       ])
+            ]).run(sender=u2)
+        scenario += c1.transfer(
+            [
+                c1.batch_transfer.item(from_=u1.address,
+                                       txs=[
+                                           sp.record(to_=u3.address,
+                                                     token_id=3)
+                                       ])
+            ]).run(sender=u1)
+        # Mint Five Tokens to U1 & U2 for Testing Select Teams
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=5
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=6
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=1,
+                            token_id=7
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=2,
+                            token_id=8
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u1.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=9
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=10
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=11
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=2,
+                            token_id=12
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=13
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=14
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=1,
+                            token_id=15
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=16
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=2,
+                            token_id=17
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=0,
+                            token_id=18
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=1,
+                            token_id=19
+                            ).run(sender=admin)
+        scenario += c1.mint(address=u2.address,
+                            amount=1,
+                            player_id=23335,
+                            token_id=20
+                            ).run(sender=admin)
+
+        scenario += c1.feedData(array=[sp.record(player_id=0, points=369, rank=1), sp.record(
+            player_id=1, points=284, rank=2), sp.record(player_id=2, points=260, rank=3)]).run(sender=admin)
+
+        scenario.h2("Fantasy League")
+        scenario.h4("Add Match")
+        scenario.p("Add Match without Admin Account. Must Fail.")
+        scenario += c1.addMatch(teamA="CSK", teamB="RCB",
+                                match_id=0, date="3 Spet 2020").run(sender=u1, valid=False)
+        scenario.p("Add Match using Admin Account.")
+        scenario += c1.addMatch(teamA="CSK", teamB="RCB",
+                                match_id=0, date="3 Spet 2020").run(sender=admin)
+        scenario.p("Add Match using Admin Account.")
+        scenario += c1.addMatch(teamA="MI", teamB="RCB",
+                                match_id=1, date="3 Spet 2020").run(sender=admin)
+        scenario.p("Add already existing Match. Must Fail.")
+        scenario += c1.addMatch(teamA="CSK", teamB="RCB",
+                                match_id=0, date="3 Spet 2020").run(sender=admin, valid=False)
+
+        scenario.h4("Activate Match.")
+
+        scenario.p("Activate a Match using Admin Account")
+        scenario += c1.activateMatch(match_id=0).run(sender=admin)
+        scenario.p("Activate a another match while a match is active. Must Fail.")
+        scenario += c1.activateMatch(match_id=1).run(sender=admin, valid=False)
+        scenario.p("Activate a another match that does not exist. Must Fail.")
+        scenario += c1.activateMatch(match_id=2).run(sender=admin, valid=False)
+
+        scenario.h4("Select Team Tokens.")
+        scenario.p("User 1 puts 5 owned tokens in Match.")
+        scenario += c1.selectTeam(tokens=[5, 6,
+                                          7, 8, 9], match_id=0).run(sender=u1)
+        scenario.p("User 2 puts 4 tokens for Match. Must Fail.")
+        scenario += c1.selectTeam(tokens=[10, 11, 12, 13],
+                                  match_id=0).run(sender=u2, valid=False)
+        scenario.p(
+            "User 2 puts 5 tokens for a InValid Match ( that does not exixst in the matches Map).Must Fail. ")
+        scenario += c1.selectTeam(tokens=[10, 11, 12, 13, 14],
+                                  match_id=1).run(sender=u2, valid=False)
+        scenario.p("User 2 puts 5 owned tokens for Match")
+        scenario += c1.selectTeam(tokens=[10, 11,
+                                          12, 13, 14], match_id=0).run(sender=u2)
+        scenario.p("User 2 puts another 5 owned tokens for Match. Must Fail.")
+        scenario += c1.selectTeam(tokens=[15, 16, 17, 18, 19],
+                                  match_id=0).run(sender=u2, valid=False)
+        scenario.p(
+            "User 2 puts 5 owned tokens (already staked) for Match. Must Fail")
+        scenario += c1.selectTeam(tokens=[10, 11, 12, 13, 14],
+                                  match_id=0).run(sender=u2, valid=False)
+        scenario.p("User 3 puts not owned token for Match. Must Fail.")
+        scenario += c1.selectTeam(tokens=[0, 1, 2, 3, 6],
+                                  match_id=0).run(sender=u3, valid=False)
+        scenario.p("User 3 puts owned token for Match.")
+        scenario += c1.selectTeam(tokens=[0, 1,
+                                          2, 3, 4], match_id=0).run(sender=u3)
+
+        scenario.h4("End Compete")
+        scenario += c1.endCompete(match_id=0).run(sender=admin)
+
+        scenario.h4("End Match / Update Card Scores.**")
+        scenario += c1.endMatch(match_id=0).run(sender=admin)
 
 ##
 # Global Environment Parameters
@@ -1019,7 +1172,7 @@ def environment_config():
     return FA2_config(
         debug_mode=global_parameter("debug_mode", False),
         single_asset=global_parameter("single_asset", False),
-        non_fungible=global_parameter("non_fungible", False),
+        non_fungible=global_parameter("non_fungible", True),
         add_mutez_transfer=global_parameter("add_mutez_transfer", False),
         readable=global_parameter("readable", True),
         force_layouts=global_parameter("force_layouts", True),
@@ -1043,8 +1196,8 @@ if "templates" not in __name__:
     if not global_parameter("only_environment_test", False):
         add_test(FA2_config(debug_mode=True), is_default=not sp.in_browser)
         add_test(FA2_config(single_asset=True), is_default=not sp.in_browser)
-        add_test(FA2_config(non_fungible=True, add_mutez_transfer=True),
-                 is_default=not sp.in_browser)
+        # add_test(FA2_config(non_fungible = True, add_mutez_transfer = True),
+        #          is_default = not sp.in_browser)
         add_test(FA2_config(readable=False), is_default=not sp.in_browser)
         add_test(FA2_config(force_layouts=False),
                  is_default=not sp.in_browser)
